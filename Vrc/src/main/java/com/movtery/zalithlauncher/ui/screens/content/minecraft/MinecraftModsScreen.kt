@@ -118,7 +118,7 @@ fun MinecraftModsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF141414))
+            .background(Color.Transparent)
     ) {
         Column(
             modifier = Modifier
@@ -131,9 +131,9 @@ fun MinecraftModsScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Color(0xFF1E1E20))
-                    .border(BorderStroke(1.dp, Color(0xFF333333)), RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xEE101624))
+                    .border(BorderStroke(1.dp, Color(0x3300F0FF)), RoundedCornerShape(12.dp))
                 .padding(14.dp)
             ) {
                 Row(
@@ -248,9 +248,9 @@ fun MinecraftModsScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(3.dp))
-                            .background(Color(0xFF1E1E20))
-                            .border(BorderStroke(1.dp, Color(0xFF333333)), RoundedCornerShape(3.dp))
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xEE101624))
+                            .border(BorderStroke(1.dp, Color(0x3338455A)), RoundedCornerShape(12.dp))
                             .clickable(onClick = item.onClick)
                             .padding(12.dp)
                     ) {

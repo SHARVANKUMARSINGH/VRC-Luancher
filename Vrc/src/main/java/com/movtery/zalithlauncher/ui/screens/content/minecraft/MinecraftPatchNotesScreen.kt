@@ -147,7 +147,7 @@ fun MinecraftPatchNotesScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF141414))
+            .background(Color.Transparent)
     ) {
         Column(
             modifier = Modifier

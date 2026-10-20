@@ -82,7 +82,7 @@ fun MinecraftNewsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF141414))
+            .background(Color.Transparent)
     ) {
         Column(
             modifier = Modifier
@@ -133,9 +133,9 @@ private fun NewsArticleCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(4.dp))
-            .background(Color(0xFF1E1E20))
-            .border(BorderStroke(1.dp, Color(0xFF333333)), RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xEE101624))
+            .border(BorderStroke(1.dp, Color(0x3300F0FF)), RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
     ) {
         // High-res Image Banner (Zoomed out with proper 16:9 aspect ratio)
