@@ -1,0 +1,36 @@
+name: Feature Request
+description: 'Suggest an idea or enhancement for Vrc Luancher'
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Feature Category
+      description: |
+        Which area of the launcher does this feature apply to?
+      options:
+        - 'In-Game / Gameplay & Controls'
+        - 'Launcher UI & Visual Aesthetics'
+        - 'Launcher Settings & JVM/Renderer'
+        - 'Version & Mod Management'
+        - 'New Feature / Capability'
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: |
+        Clearly and thoroughly describe your proposed feature or enhancement.
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Mockups, Screenshots, or References
+      description: |
+        If applicable, attach mockups, sketches, or video references.
+    validations:
+      required: false

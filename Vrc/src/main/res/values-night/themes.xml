@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme.VrcLauncher" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">#8AB4F8</item>
+        <item name="colorSecondary">#81C995</item>
+        <item name="colorTertiary">#FDD663</item>
+        <item name="colorError">#F28B82</item>
+        <item name="colorSurface">#1F1F1F</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:statusBarColor">#141414</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+    <style name="AppTheme.SplashScreen" parent="@style/Theme.SplashScreen">
+        <item name="postSplashScreenTheme">@style/AppTheme.VrcLauncher</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_launcher</item>
+        <item name="windowSplashScreenBackground">#141414</item>
+        <item name="windowSplashScreenAnimationDuration">200</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:statusBarColor">#141414</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+    <style name="AppTheme.Fullscreen" parent="AppTheme.VrcLauncher">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+</resources>

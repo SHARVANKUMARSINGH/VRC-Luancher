@@ -1,0 +1,131 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build Variant (Release or Debug)'
+        required: true
+        default: 'Release'
+        type: choice
+        options:
+          - 'Release'
+          - 'Debug'
+      release_tag:
+        description: 'Release Tag (e.g. v1.0.0, leave empty for auto tag)'
+        required: false
+        default: ''
+      release_title:
+        description: 'Release Title'
+        required: false
+        default: 'Vrc Luancher Release'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x gradlew
+
+      - name: Build APK
+        env:
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+        run: |
+          BUILD_TYPE="${{ github.event.inputs.build_type || 'Release' }}"
+          echo "Building variant: $BUILD_TYPE"
+          
+          if [ "$BUILD_TYPE" = "Release" ] && [ -n "$STORE_PASSWORD" ]; then
+            ./gradlew :Vrc:assembleRelease --stacktrace
+          else
+            echo "Building Debug APK (or Release fallback)..."
+            ./gradlew :Vrc:assembleDebug --stacktrace
+          fi
+
+      - name: Collect and Rename APKs
+        id: collect_apks
+        run: |
+          mkdir -p release-apks
+          
+          # Find all produced APK files
+          find Vrc/build/outputs/apk -name "*.apk" -type f | while read -r apk_path; do
+            filename=$(basename "$apk_path")
+            echo "Found APK: $apk_path"
+            cp "$apk_path" "release-apks/Vrc-Luancher-$filename"
+          done
+          
+          COUNT=$(find release-apks -name "*.apk" | wc -l)
+          echo "Collected $COUNT APK(s)"
+          ls -la release-apks/
+
+      - name: Upload Artifacts to Workflow Run
+        uses: actions/upload-artifact@v4
+        with:
+          name: vrc-luancher-apks
+          path: release-apks/*.apk
+          retention-days: 14
+
+      - name: Determine Release Tag
+        id: release_info
+        run: |
+          if [ -n "${{ github.event.inputs.release_tag }}" ]; then
+            TAG="${{ github.event.inputs.release_tag }}"
+          elif [ -n "${{ github.ref_name }}" ] && [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG="${{ github.ref_name }}"
+          else
+            TAG="v1.0.0-$(date +'%Y%m%d-%H%M%S')"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          
+          TITLE="${{ github.event.inputs.release_title || 'Vrc Luancher' }} - $TAG"
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+
+      - name: Upload APKs to GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+        with:
+          tag_name: ${{ steps.release_info.outputs.tag }}
+          name: ${{ steps.release_info.outputs.title }}
+          draft: false
+          prerelease: false
+          files: release-apks/*.apk
+          body: |
+            ### 🚀 Vrc Luancher Release
+            
+            Welcome to **Vrc Luancher**!
+            
+            #### 🌟 Highlights & Features
+            - **Authentic New MCPE Square Joystick**: Pixel-accurate Bedrock HUD styling, 3D pixel shading highlights, square track boundaries, and native sprint-lock.
+            - **Google Apps Design & Material 3**: Beautiful Google color palette (Google Blue, Green, Yellow, Red) and expressive Material 3 shapes.
+            - **Auto-Hardware & OpenGL Detection**: Automatically selects the best OpenGL ES / Vulkan renderer (Kopper Zink, Freedreno/Turnip, NG-GL4ES) and optimal memory allocation.
+            - **Native Speed Performance**: Multi-threaded Mesa OpenGL (`mesa_glthread=true`), low-latency G1GC JVM parameters, and maximized native execution speed.
+            - **Pre-Settings Gear Menu**: One-tap auto-optimization, performance presets, and live joystick test.
+            
+            Built automatically via GitHub Actions CI/CD.

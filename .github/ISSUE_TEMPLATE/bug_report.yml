@@ -1,0 +1,97 @@
+name: Bug Report
+description: 'Report an issue or crash with Vrc Luancher'
+labels: [Bug]
+body:
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      description: |
+        Select whether this crash or issue is in the Launcher UI or during Minecraft gameplay.
+      options:
+        - 'Game Problem / Gameplay Crash'
+        - 'Launcher Problem / UI Crash'
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue Description
+      description: |
+        Clearly and in detail describe the issue you encountered.
+    validations:
+      required: true
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Log File
+      description: |
+        Please paste or upload the log file:
+        - For Launcher Crashes: Go to Launcher Settings -> Share Launcher Logs.
+        - For Game Crashes: Check the version overview Running Log or latest_game.log.
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or Videos
+      description: |
+        Upload screenshots or screen recordings showing the issue.
+    validations:
+      required: false
+
+  - type: textarea
+    id: repetition
+    attributes:
+      label: Reproduction Steps
+      description: |
+        Step-by-step instructions to reproduce the problem.
+      placeholder: |
+        1. Open Vrc Luancher
+        2. Select installation X
+        3. Click Play / Settings
+      render: markdown
+    validations:
+      required: false
+
+  - type: dropdown
+    id: android-version
+    attributes:
+      label: Android Version
+      description: |
+        Vrc Luancher supports Android 8.0 (API 26) and above.
+      options:
+        - '16'
+        - '15'
+        - '14'
+        - '13'
+        - '12'
+        - '11'
+        - '10'
+        - '9'
+        - '8'
+    validations:
+      required: true
+
+  - type: input
+    id: launcher-info
+    attributes:
+      label: Launcher Version
+      description: |
+        Provide the version number of Vrc Luancher (e.g. 2.6.1).
+      placeholder: 2.6.1
+    validations:
+      required: true
+
+  - type: input
+    id: device-info
+    attributes:
+      label: Device Information
+      description: |
+        Provide your device model, SoC, GPU, and architecture (e.g. Samsung S23, Snapdragon 8 Gen 2, 12GB RAM, arm64-v8a).
+      placeholder: Samsung Galaxy S23, Snapdragon 8 Gen 2, arm64
+    validations:
+      required: true

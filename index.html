@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vrc Luancher | The Premier Minecraft: Java Edition Launcher for Android</title>
+  <meta name="description" content="Experience authentic Minecraft: Java Edition on Android. High-performance Vulkan & OpenGL ES renderers, dual touch controls (Java & Bedrock), one-click modding with Fabric & Forge, and offline multiplayer.">
+  <meta name="keywords" content="Minecraft Java Android, Vrc Luancher, PojavLauncher alternative, Minecraft mobile Java, Android Minecraft mods, Vulkan renderer Android">
+  <meta name="author" content="Vivek Kumar">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://vivxkumar07.github.io/Cubiq-Launcher/">
+
+  <!-- Google Verification -->
+  <meta name="google-site-verification" content="google688826ec1913fe24">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Vrc Luancher - Minecraft: Java Edition on Android">
+  <meta property="og:description" content="Play desktop Minecraft Java 1.7 to 1.21+ on your Android device with native Vulkan/GLES renderers and custom touch controls.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vivxkumar07.github.io/Cubiq-Launcher/">
+  <meta property="og:image" content="https://raw.githubusercontent.com/SHARVANKUMARSINGH/VRC-Luancher/main/Vrc/src/main/res/mipmap-xxxhdpi/ic_launcher.png">
+  <meta property="og:site_name" content="Vrc Luancher">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Vrc Luancher - Minecraft: Java Edition on Android">
+  <meta name="twitter:description" content="Native Jetpack Compose UI, Vulkan hardware acceleration, dual touch layouts, Fabric/Forge modding on Android.">
+
+  <!-- Schema.org Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Vrc Luancher",
+    "operatingSystem": "Android 8.0+",
+    "applicationCategory": "GameApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "High-performance open-source Minecraft: Java Edition launcher for Android devices.",
+    "url": "https://vivxkumar07.github.io/Cubiq-Launcher/",
+    "downloadUrl": "https://github.com/SHARVANKUMARSINGH/VRC-Luancher/releases/latest"
+  }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #0a0d14;
+      --bg-card: rgba(18, 23, 34, 0.75);
+      --bg-card-hover: rgba(28, 36, 52, 0.85);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(56, 176, 0, 0.35);
+      --accent-green: #38b000;
+      --accent-emerald: #00e676;
+      --accent-gradient: linear-gradient(135deg, #00e676 0%, #38b000 50%, #007200 100%);
+      --text-primary: #f0f4fc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 230, 118, 0.15), transparent),
+        radial-gradient(circle at 10% 80%, rgba(30, 41, 59, 0.4), transparent);
+      background-attachment: fixed;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Navbar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(10, 13, 20, 0.8);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .brand-cube {
+      width: 32px;
+      height: 32px;
+      background: var(--accent-gradient);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 16px rgba(0, 230, 118, 0.4);
+      font-weight: 900;
+      color: #000;
+      font-size: 1rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-emerald);
+    }
+
+    .btn-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    .btn-github:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 96px 0 64px;
+      text-align: center;
+      position: relative;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(0, 230, 118, 0.1);
+      border: 1px solid rgba(0, 230, 118, 0.3);
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent-emerald);
+      margin-bottom: 24px;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 5.5vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 24px;
+    }
+
+    .text-gradient {
+      background: linear-gradient(135deg, #ffffff 30%, #a7f3d0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .text-accent-gradient {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      color: var(--text-secondary);
+      max-width: 680px;
+      margin: 0 auto 36px;
+      font-weight: 400;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      background: var(--accent-gradient);
+      color: #051405;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(0, 230, 118, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 230, 118, 0.5);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Mockup Showcase */
+    .hero-mockup-wrapper {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+      border-radius: 20px;
+      padding: 10px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+      box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.7);
+    }
+
+    .hero-mockup {
+      border-radius: 14px;
+      background: #0f141f;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .mockup-inner {
+      text-align: center;
+      padding: 32px;
+    }
+
+    .mockup-icon {
+      font-size: 3.5rem;
+      margin-bottom: 12px;
+    }
+
+    /* Features Grid */
+    .features {
+      padding: 96px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 56px;
+    }
+
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-glow);
+      transform: translateY(-4px);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(0, 230, 118, 0.1);
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      border: 1px solid rgba(0, 230, 118, 0.2);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .card-text {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 48px 0;
+      background: rgba(8, 10, 15, 0.9);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: var(--accent-emerald);
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container navbar">
+      <a href="#" class="brand">
+        <div class="brand-cube">C</div>
+        <span>Vrc Luancher</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#download">Download</a></li>
+        <li><a href="https://github.com/SHARVANKUMARSINGH/VRC-Luancher">Source Code</a></li>
+      </ul>
+      <a href="https://github.com/SHARVANKUMARSINGH/VRC-Luancher" target="_blank" rel="noopener" class="btn-github">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="badge-pill">
+          <span class="badge-dot"></span>
+          <span>Open Source Minecraft Java on Android</span>
+        </div>
+        <h1 class="hero-title">
+          Desktop Minecraft.<br>
+          <span class="text-accent-gradient">Native on Mobile.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Experience authentic Minecraft: Java Edition 1.7 through 1.21+ with hardware-accelerated Vulkan & OpenGL ES renderers, dual touch controls, and seamless modding.
+        </p>
+        <div class="hero-cta" id="download">
+          <a href="https://github.com/SHARVANKUMARSINGH/VRC-Luancher/releases/latest" class="btn-primary" target="_blank" rel="noopener">
+            📥 Download Latest APK
+          </a>
+          <a href="https://github.com/SHARVANKUMARSINGH/VRC-Luancher" class="btn-secondary" target="_blank" rel="noopener">
+            ⭐ Star on GitHub
+          </a>
+        </div>
+
+        <!-- App Preview Card -->
+        <div class="hero-mockup-wrapper">
+          <div class="hero-mockup">
+            <div class="mockup-inner">
+              <div class="mockup-icon">🟩</div>
+              <h3 style="font-size: 1.5rem; margin-bottom: 8px;">Pixel-Accurate PC Launcher Interface</h3>
+              <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto;">
+                Authentic PC launcher buttons, native Minecraft typography, sound effects, and clean Jetpack Compose architecture.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Engineered for Performance</h2>
+          <p class="section-desc">Everything you need to play Java Edition anywhere with zero compromises.</p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="card-icon">⚡</div>
+            <h3 class="card-title">Vulkan & OpenGL ES Renderers</h3>
+            <p class="card-text">
+              Equipped with Krypton (NGGL4ES), Kopper Zink Vulkan, GL4ES, and Freedreno drivers for high frame rates and battery efficiency.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-icon">🎮</div>
+            <h3 class="card-title">Dual Touch Controls</h3>
+            <p class="card-text">
+              Switch effortlessly between Classic Java key layouts and Pocket Edition (PE) Bedrock touch controls with on-screen customization.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-icon">📦</div>
+            <h3 class="card-title">One-Click Mod Loaders</h3>
+            <p class="card-text">
+              Built-in installer for Fabric, Forge, NeoForge, and Quilt. Directly download mods, resource packs, and shaders via CurseForge & Modrinth.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-icon">🌐</div>
+            <h3 class="card-title">LAN Multiplayer & Offline</h3>
+            <p class="card-text">
+              Play offline with local accounts or authenticate via Microsoft OAuth. Host and join peer-to-peer LAN worlds with Terracotta proxy.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-icon">☕</div>
+            <h3 class="card-title">Multi-Java Runtimes</h3>
+            <p class="card-text">
+              Automated runtime isolation for Java 8, 17, and 21+ with smart memory allocation capped safely by your device's RAM.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-icon">🛡️</div>
+            <h3 class="card-title">100% Free & Open Source</h3>
+            <p class="card-text">
+              GPL-3.0 licensed. No ads, no trackers, no paywalls. Built and maintained openly by the community on GitHub.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-links">
+        <a href="https://github.com/SHARVANKUMARSINGH/VRC-Luancher">GitHub Repository</a>
+        <a href="https://github.com/SHARVANKUMARSINGH/VRC-Luancher/releases">Releases</a>
+        <a href="https://github.com/SHARVANKUMARSINGH/VRC-Luancher/issues">Issues</a>
+        <a href="https://github.com/SHARVANKUMARSINGH/VRC-Luancher/blob/main/LICENSE">License (GPL-3.0)</a>
+      </div>
+      <p>© 2026 Vrc Luancher Team. Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="35%" r="75%" fx="45%" fy="25%">
+      <stop offset="0%" stop-color="#1f232b" />
+      <stop offset="60%" stop-color="#111317" />
+      <stop offset="100%" stop-color="#090a0d" />
+    </radialGradient>
+
+    <!-- Google Material Colors Gradients -->
+    <linearGradient id="googleBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8ab4f8" />
+      <stop offset="100%" stop-color="#1a73e8" />
+    </linearGradient>
+    <linearGradient id="googleGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#81c995" />
+      <stop offset="100%" stop-color="#188038" />
+    </linearGradient>
+    <linearGradient id="googleYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdd663" />
+      <stop offset="100%" stop-color="#f29900" />
+    </linearGradient>
+    <linearGradient id="googleRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f28b82" />
+      <stop offset="100%" stop-color="#d93025" />
+    </linearGradient>
+
+    <!-- Isometric Cube Facets -->
+    <linearGradient id="cubeTop" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b4252" />
+      <stop offset="100%" stop-color="#4c566a" />
+    </linearGradient>
+    <linearGradient id="cubeLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2e3440" />
+      <stop offset="100%" stop-color="#1e222a" />
+    </linearGradient>
+    <linearGradient id="cubeRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#242933" />
+      <stop offset="100%" stop-color="#181a20" />
+    </linearGradient>
+
+    <!-- Neon Glow Filter -->
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Drop Shadows -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.65" />
+    </filter>
+  </defs>
+
+  <!-- Base Squircle Container (Material 3 Expressive Shape) -->
+  <rect x="24" y="24" width="464" height="464" rx="104" fill="url(#bgGrad)" stroke="#2b313d" stroke-width="3" filter="url(#cardShadow)" />
+
+  <!-- Subtle Outer Accent Rings (Speed & Power) -->
+  <circle cx="256" cy="236" r="172" fill="none" stroke="#2a303c" stroke-width="2" stroke-dasharray="10 8" />
+  <circle cx="256" cy="236" r="192" fill="none" stroke="#1f242e" stroke-width="1.5" />
+
+  <!-- 3D Isometric Minecraft / Bedrock Cube Structure -->
+  <g transform="translate(0, -10)">
+    <!-- Top Face -->
+    <polygon points="256,120 376,188 256,256 136,188" fill="url(#cubeTop)" stroke="#4c566a" stroke-width="2" stroke-linejoin="round" />
+
+    <!-- Left Face -->
+    <polygon points="136,188 256,256 256,368 136,300" fill="url(#cubeLeft)" stroke="#3b4252" stroke-width="2" stroke-linejoin="round" />
+
+    <!-- Right Face -->
+    <polygon points="256,256 376,188 376,300 256,368" fill="url(#cubeRight)" stroke="#2e3440" stroke-width="2" stroke-linejoin="round" />
+
+    <!-- Pixel Grid Details on Cube Faces -->
+    <!-- Top Grid Lines -->
+    <line x1="196" y1="154" x2="316" y2="222" stroke="#5e6779" stroke-width="1" opacity="0.4" />
+    <line x1="316" y1="154" x2="196" y2="222" stroke="#5e6779" stroke-width="1" opacity="0.4" />
+
+    <!-- Left Grid Lines -->
+    <line x1="136" y1="244" x2="256" y2="312" stroke="#434c5e" stroke-width="1" opacity="0.3" />
+    <line x1="196" y1="222" x2="196" y2="334" stroke="#434c5e" stroke-width="1" opacity="0.3" />
+
+    <!-- Right Grid Lines -->
+    <line x1="376" y1="244" x2="256" y2="312" stroke="#3b4252" stroke-width="1" opacity="0.3" />
+    <line x1="316" y1="222" x2="316" y2="334" stroke="#3b4252" stroke-width="1" opacity="0.3" />
+
+    <!-- Bedrock Core Emblem: The Glowing "V" (VRC) -->
+    <path d="M208,180 L256,290 L304,180 L284,180 L256,248 L228,180 Z" fill="url(#googleBlue)" filter="url(#neonGlow)" />
+  </g>
+
+  <!-- MCPE Square Joystick Overlay (Bottom Left Accent) -->
+  <g transform="translate(74, 314)">
+    <!-- Square Track Base -->
+    <rect x="0" y="0" width="86" height="86" rx="8" fill="#1b1e24" stroke="#4285F4" stroke-width="2" opacity="0.85" />
+    <!-- 4 Directional Indicators -->
+    <polygon points="43,6 48,16 38,16" fill="#8ab4f8" />
+    <polygon points="43,80 48,70 38,70" fill="#8ab4f8" />
+    <polygon points="6,43 16,38 16,48" fill="#8ab4f8" />
+    <polygon points="80,43 70,38 70,48" fill="#8ab4f8" />
+    <!-- Center Knob -->
+    <rect x="25" y="25" width="36" height="36" rx="6" fill="#2d333f" stroke="#8ab4f8" stroke-width="2" />
+    <circle cx="43" cy="43" r="5" fill="#4285F4" />
+  </g>
+
+  <!-- Material 3 Color Dots (Google Palette Quad) -->
+  <g transform="translate(356, 326)">
+    <!-- 2x2 Grid of Google Colors -->
+    <circle cx="16" cy="16" r="11" fill="url(#googleBlue)" filter="url(#neonGlow)" />
+    <circle cx="50" cy="16" r="11" fill="url(#googleRed)" filter="url(#neonGlow)" />
+    <circle cx="16" cy="50" r="11" fill="url(#googleYellow)" filter="url(#neonGlow)" />
+    <circle cx="50" cy="50" r="11" fill="url(#googleGreen)" filter="url(#neonGlow)" />
+  </g>
+
+  <!-- Typography / Title: VRC LAUNCHER -->
+  <text x="256" y="442" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="900" font-size="34" letter-spacing="4" fill="#FFFFFF">
+    VRC <tspan fill="#8ab4f8">LAUNCHER</tspan>
+  </text>
+  <text x="256" y="466" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="500" font-size="12" letter-spacing="3" fill="#9aa0a6">
+    NATIVE SPEED • BEDROCK MCPE HUD
+  </text>
+</svg>
