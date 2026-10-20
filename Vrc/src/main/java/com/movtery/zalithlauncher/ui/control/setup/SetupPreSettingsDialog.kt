@@ -88,9 +88,10 @@ fun SetupPreSettingsDialog(
     val hasVulkan = remember { AutoSetupManager.isVulkanSupported(context) }
 
     var allocatedRam by remember {
+        val currentRam = AllSettings.ramAllocation.getValue()
         mutableFloatStateOf(
-            (AllSettings.ramAllocation.getValue().takeIf { it > 0 }
-                ?: AutoSetupManager.computeOptimalRamMb(totalRam)).toFloat()
+            (if (currentRam != null && currentRam > 0) currentRam
+            else AutoSetupManager.computeOptimalRamMb(totalRam)).toFloat()
         )
     }
 
