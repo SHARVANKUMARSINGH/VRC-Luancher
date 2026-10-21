@@ -186,6 +186,7 @@ internal fun JoystickWidgetRenderer(
                 .onSizeChanged { size ->
                     currentSize = size
                     if (size != IntSize.Zero) {
+                        data.internalRenderSize = size
                         // 计算并设置背景区域
                         val sizePx = Size(size.width.toFloat(), size.height.toFloat())
                         data.backgroundRegion = backgroundShape.toRegion(

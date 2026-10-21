@@ -220,12 +220,13 @@ private fun BoxWithConstraintsScope.BaseControlBoxLayout(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(1_000_000f)
+                .zIndex(0f)
         ) {
             content()
         }
 
         ControlsRendererLayer(
+            modifier = Modifier.zIndex(100f),
             isDark = isDark,
             opacity = opacity,
             layers = reversedLayers,
@@ -244,6 +245,7 @@ private fun BoxWithConstraintsScope.BaseControlBoxLayout(
 
 @Composable
 private fun ControlsRendererLayer(
+    modifier: Modifier = Modifier,
     isDark: Boolean,
     @FloatRange(0.0, 1.0) opacity: Float,
     layers: List<ObservableControlLayer>,
@@ -258,7 +260,7 @@ private fun ControlsRendererLayer(
     onReleasePointer: (PointerId) -> Unit
 ) {
     Layout(
-        modifier = Modifier.alpha(alpha = opacity),
+        modifier = modifier.alpha(alpha = opacity),
         content = {
             //按图层顺序渲染所有可见的控件
             layers.forEach { layer ->

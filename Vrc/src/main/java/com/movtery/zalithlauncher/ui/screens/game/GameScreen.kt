@@ -619,9 +619,7 @@ fun GameScreen(
                 //虚拟鼠标控制层
                 MouseControlLayout(
                     isTouchProxyEnabled = isTouchProxyEnabled,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .zIndex(1_000_000f),
+                    modifier = Modifier.fillMaxSize(),
                     cursorMode = cursorMode,
                     screenSize = screenSize,
                     onInputAreaRectUpdated = onInputAreaRectUpdated,
@@ -934,7 +932,6 @@ private fun MouseControlLayout(
 ) {
     Box(
         modifier = modifier
-            .zIndex(1_000_000f)
             .then(
                 if (isTouchProxyEnabled) {
                     Modifier
@@ -954,9 +951,7 @@ private fun MouseControlLayout(
         val capturedLongPressMouseAction = AllSettings.gestureLongPressMouseAction.state.toAction()
 
         SwitchableMouseLayout(
-            modifier = Modifier
-                .fillMaxSize()
-                .zIndex(1_000_000f),
+            modifier = Modifier.fillMaxSize(),
             screenSize = screenSize,
             cursorMode = cursorMode,
             onTouch = onTouch,

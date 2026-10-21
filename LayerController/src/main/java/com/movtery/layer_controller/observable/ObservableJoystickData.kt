@@ -242,16 +242,17 @@ class ObservableJoystickData(data: JoystickData) : ObservableWidget() {
     ) {
         if (newDirection == currentDirection) return
 
-        // 释放旧方向的事件
-        if (currentDirection != JoystickDirection.None) {
-            val oldEvents = directionEvents[currentDirection] ?: emptyList()
-            eventHandler.onKeyPressed(oldEvents, false)
-        }
+        val oldEvents = if (currentDirection != JoystickDirection.None) directionEvents[currentDirection] ?: emptyList() else emptyList()
+        val newEvents = if (newDirection != JoystickDirection.None) directionEvents[newDirection] ?: emptyList() else emptyList()
 
-        // 按下新方向的事件
-        if (newDirection != JoystickDirection.None) {
-            val newEvents = directionEvents[newDirection] ?: emptyList()
-            eventHandler.onKeyPressed(newEvents, true)
+        val toRelease = oldEvents.filter { old -> newEvents.none { new -> new.type == old.type && new.key == old.key } }
+        val toPress = newEvents.filter { new -> oldEvents.none { old -> old.type == new.type && old.key == new.key } }
+
+        if (toRelease.isNotEmpty()) {
+            eventHandler.onKeyPressed(toRelease, false)
+        }
+        if (toPress.isNotEmpty()) {
+            eventHandler.onKeyPressed(toPress, true)
         }
 
         currentDirection = newDirection
@@ -267,10 +268,27 @@ class ObservableJoystickData(data: JoystickData) : ObservableWidget() {
         lockThresholdPx: Float,
         eventHandler: EventHandler
     ) {
-        val clampedPosition = position.clampToRegion(
-            region = backgroundRegion,
-            center = centerPoint
-        )
+        val renderW = internalRenderSize.width.toFloat()
+        val renderH = internalRenderSize.height.toFloat()
+        val maxRange = if (renderW > 0f && renderH > 0f) {
+            minOf(renderW, renderH) * 0.42f
+        } else 60f
+
+        val clampedPosition = if (!backgroundRegion.isEmpty) {
+            val clamped = position.clampToRegion(
+                region = backgroundRegion,
+                center = centerPoint
+            )
+            if (clamped == centerPoint && position != centerPoint && maxRange > 0f) {
+                position.clampToSquare(centerPoint, maxRange)
+            } else {
+                clamped
+            }
+        } else if (maxRange > 0f) {
+            position.clampToSquare(centerPoint, maxRange)
+        } else {
+            position
+        }
 
         knobOffset = clampedPosition - centerPoint
 
@@ -284,7 +302,7 @@ class ObservableJoystickData(data: JoystickData) : ObservableWidget() {
         val newCanLockState =
             canLock &&
                     direction == JoystickDirection.North &&
-                    lastDragPosition.y < -lockThresholdPx
+                    knobOffset.y < -lockThresholdPx
 
         if (newCanLockState && !canLockState) {
             eventHandler.onKeyPressed(lockEvents, true)
@@ -321,35 +339,37 @@ class ObservableJoystickData(data: JoystickData) : ObservableWidget() {
                         if (activePointer == null) {
                             if (!pointerEventBus.checkOccupiedPointers(pointerId)) {
                                 val pos = change.position
-                                // 命中检测：触摸必须在背景区域内
-                                if (backgroundRegion.contains(pos.x.toInt(), pos.y.toInt())) {
+                                val renderW = internalRenderSize.width.toFloat()
+                                val renderH = internalRenderSize.height.toFloat()
+                                val inBounds = if (renderW > 0f && renderH > 0f) {
+                                    pos.x in -15f..(renderW + 15f) && pos.y in -15f..(renderH + 15f)
+                                } else true
+
+                                val inRegion = if (!backgroundRegion.isEmpty) {
+                                    backgroundRegion.contains(pos.x.toInt(), pos.y.toInt())
+                                } else inBounds
+
+                                if (inRegion || inBounds) {
                                     change.consume()
                                     activePointer = pointerId
                                     onOccupiedPointer(pointerId)
                                     lastDragPosition = pos
-                                    // 如果当前锁定中，解锁
                                     if (isLocked) {
                                         isLocked = false
                                     }
 
-                                    if (triggerMode == JoystickTriggerMode.TOUCH) {
-                                        // 触碰触发时立即更新摇杆状态
-                                        val centerPoint = Offset(
-                                            internalRenderSize.width / 2f,
-                                            internalRenderSize.height / 2f
-                                        )
-                                        val bgRadius = minOf(
-                                            internalRenderSize.width,
-                                            internalRenderSize.height
-                                        ) / 2f
-                                        updateJoystickState(
-                                            position = pos,
-                                            centerPoint = centerPoint,
-                                            deadZoneRadius = bgRadius * deadZoneRatio,
-                                            lockThresholdPx = bgRadius * lockThreshold,
-                                            eventHandler = eventHandler
-                                        )
-                                    }
+                                    val centerPoint = Offset(
+                                        if (renderW > 0f) renderW / 2f else pos.x,
+                                        if (renderH > 0f) renderH / 2f else pos.y
+                                    )
+                                    val bgRadius = if (renderW > 0f && renderH > 0f) minOf(renderW, renderH) / 2f else 70f
+                                    updateJoystickState(
+                                        position = pos,
+                                        centerPoint = centerPoint,
+                                        deadZoneRadius = bgRadius * deadZoneRatio,
+                                        lockThresholdPx = bgRadius * lockThreshold,
+                                        eventHandler = eventHandler
+                                    )
                                 }
                             }
                         }
@@ -358,29 +378,32 @@ class ObservableJoystickData(data: JoystickData) : ObservableWidget() {
                 // 移动事件
                 activePointer?.let { pointerId ->
                     event.changes
-                        .firstOrNull { it.id == pointerId && it.positionChanged() && !it.isConsumed }
+                        .firstOrNull { it.id == pointerId }
                         ?.let { moveChange ->
-                            val localPos = moveChange.position
-                            val centerPoint = Offset(
-                                internalRenderSize.width / 2f,
-                                internalRenderSize.height / 2f
-                            )
-                            val bgRadius = minOf(internalRenderSize.width, internalRenderSize.height) / 2f
-                            val deadZoneRadius = bgRadius * deadZoneRatio
-                            val lockThresholdPx = bgRadius * lockThreshold
+                            if (moveChange.positionChanged()) {
+                                val localPos = moveChange.position
+                                val renderW = internalRenderSize.width.toFloat()
+                                val renderH = internalRenderSize.height.toFloat()
+                                val centerPoint = Offset(
+                                    if (renderW > 0f) renderW / 2f else localPos.x,
+                                    if (renderH > 0f) renderH / 2f else localPos.y
+                                )
+                                val bgRadius = if (renderW > 0f && renderH > 0f) minOf(renderW, renderH) / 2f else 70f
+                                val deadZoneRadius = bgRadius * deadZoneRatio
+                                val lockThresholdPx = bgRadius * lockThreshold
 
-                            lastDragPosition = localPos
+                                lastDragPosition = localPos
 
-                            if (isLocked) isLocked = false
+                                if (isLocked) isLocked = false
 
-                            updateJoystickState(
-                                position = localPos,
-                                centerPoint = centerPoint,
-                                deadZoneRadius = deadZoneRadius,
-                                lockThresholdPx = lockThresholdPx,
-                                eventHandler = eventHandler
-                            )
-
+                                updateJoystickState(
+                                    position = localPos,
+                                    centerPoint = centerPoint,
+                                    deadZoneRadius = deadZoneRadius,
+                                    lockThresholdPx = lockThresholdPx,
+                                    eventHandler = eventHandler
+                                )
+                            }
                             moveChange.consume()
                         }
                 }
@@ -391,18 +414,21 @@ class ObservableJoystickData(data: JoystickData) : ObservableWidget() {
                     .forEach { change ->
                         val pointerId = change.id
                         if (pointerId == activePointer) {
+                            change.consume()
+                            val renderW = internalRenderSize.width.toFloat()
+                            val renderH = internalRenderSize.height.toFloat()
                             val centerPoint = Offset(
-                                internalRenderSize.width / 2f,
-                                internalRenderSize.height / 2f
+                                if (renderW > 0f) renderW / 2f else 0f,
+                                if (renderH > 0f) renderH / 2f else 0f
                             )
-                            val bgRadius = minOf(internalRenderSize.width, internalRenderSize.height) / 2f
+                            val bgRadius = if (renderW > 0f && renderH > 0f) minOf(renderW, renderH) / 2f else 70f
                             val deadZoneRadius = bgRadius * deadZoneRatio
                             val lockThresholdPx = bgRadius * lockThreshold
 
                             if (canLockState) {
                                 isLocked = true
                                 canLockState = false
-                                val lockPosition = Offset(centerPoint.x, 0f)
+                                val lockPosition = Offset(centerPoint.x, centerPoint.y - bgRadius)
                                 updateJoystickState(
                                     position = lockPosition,
                                     centerPoint = centerPoint,

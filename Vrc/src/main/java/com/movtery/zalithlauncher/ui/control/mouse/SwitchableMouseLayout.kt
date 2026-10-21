@@ -219,7 +219,7 @@ fun SwitchableMouseLayout(
         )
     }
 
-    Box(modifier = modifier.zIndex(1_000_000f)) {
+    Box(modifier = modifier) {
         val cursorShape by ZLBridgeStates.cursorShape.collectAsStateWithLifecycle()
 
         if (showMousePointer) {
