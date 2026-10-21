@@ -136,12 +136,12 @@ fun MinecraftModsScreen(
                     .border(BorderStroke(1.dp, Color(0x3300F0FF)), RoundedCornerShape(12.dp))
                 .padding(14.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         Text(
                             text = "CONTENT & MODS HUB",
                             color = Color.White,
@@ -149,27 +149,27 @@ fun MinecraftModsScreen(
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp
                         )
-                        Spacer(modifier = Modifier.height(3.dp))
-                        Text(
-                            text = "Download modpacks, shaders, mods & resource packs directly from official repositories",
-                            color = Color(0xFFAAAAAA),
-                            fontFamily = MinecraftFontFamily,
-                            fontSize = 11.sp
+
+                        MinecraftButton(
+                            onClick = {
+                                backStackViewModel.navigateToDownload()
+                            },
+                            style = MinecraftButtonStyle.GREEN,
+                            text = "FULL BROWSER",
+                            fontSize = 10.sp,
+                            modifier = Modifier
+                                .height(32.dp)
+                                .padding(start = 8.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
-                    MinecraftButton(
-                        onClick = {
-                            backStackViewModel.navigateToDownload()
-                        },
-                        style = MinecraftButtonStyle.GREEN,
-                        text = "FULL BROWSER",
-                        fontSize = 10.sp,
-                        modifier = Modifier
-                            .width(110.dp)
-                            .height(34.dp)
+                    Text(
+                        text = "Download modpacks, shaders, mods & resource packs directly from official repositories",
+                        color = Color(0xFFAAAAAA),
+                        fontFamily = MinecraftFontFamily,
+                        fontSize = 11.sp
                     )
                 }
             }

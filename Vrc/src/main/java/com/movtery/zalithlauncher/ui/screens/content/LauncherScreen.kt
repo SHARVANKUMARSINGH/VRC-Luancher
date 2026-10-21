@@ -697,29 +697,20 @@ private fun TopAccountHeader(
                         )
                     }
                     val isMicrosoft = account?.accountType == com.movtery.zalithlauncher.game.account.AccountType.MICROSOFT.tag
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(3.dp))
+                            .background(if (isMicrosoft) Color(0x334285F4) else Color(0x3300FF88))
+                            .padding(horizontal = 5.dp, vertical = 1.5.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(3.dp))
-                                .background(if (isMicrosoft) Color(0x334285F4) else Color(0x3300FF88))
-                                .padding(horizontal = 4.dp, vertical = 1.dp)
-                        ) {
-                            Text(
-                                text = if (account != null) getAccountTypeName(account).uppercase() else "NO ACCOUNT",
-                                color = if (isMicrosoft) Color(0xFF8AB4F8) else Color(0xFF00FF88),
-                                fontFamily = MinecraftFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 9.sp
-                            )
-                        }
                         Text(
-                            text = "• VRC CONSOLE",
-                            color = Color(0xFF7E8C9F),
+                            text = if (account != null) getAccountTypeName(account).uppercase() else "NO ACCOUNT",
+                            color = if (isMicrosoft) Color(0xFF8AB4F8) else Color(0xFF00FF88),
                             fontFamily = MinecraftFontFamily,
-                            fontSize = 9.5.sp
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 9.sp,
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
                 }
@@ -730,7 +721,7 @@ private fun TopAccountHeader(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                // Gear Icon at Top for Hardware Pre-Settings & OpenGL Setup
+                // Gear Icon for Hardware Pre-Settings & OpenGL Setup
                 Box(
                     modifier = Modifier
                         .size(36.dp)
@@ -754,7 +745,7 @@ private fun TopAccountHeader(
                 // Files Quick Action
                 Box(
                     modifier = Modifier
-                        .height(36.dp)
+                        .size(36.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(Color(0xFF181E2C))
                         .border(BorderStroke(1.dp, Color(0xFF38455A)), RoundedCornerShape(10.dp))
@@ -766,60 +757,43 @@ private fun TopAccountHeader(
                                 currentPath = null,
                                 logsDir = com.movtery.zalithlauncher.path.PathManager.DIR_LAUNCHER_LOGS.absolutePath
                             )
-                        }
-                        .padding(horizontal = 10.dp),
+                        },
                     contentAlignment = Alignment.Center
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_folder_filled),
-                            contentDescription = null,
-                            tint = Color(0xFFA0B0C4),
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = "FILES",
-                            color = Color.White,
-                            fontFamily = MinecraftFontFamily,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(R.drawable.ic_folder_filled),
+                        contentDescription = "Files",
+                        tint = Color(0xFFA0B0C4),
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
 
                 // Multiplayer Quick Action (Glowing Emerald Button)
                 Box(
                     modifier = Modifier
-                        .height(36.dp)
+                        .size(36.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(Brush.horizontalGradient(listOf(Color(0xFF0D5230), Color(0xFF13683E))))
                         .border(BorderStroke(1.5.dp, Color(0xFF00FF88)), RoundedCornerShape(10.dp))
                         .clickable {
                             com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
                             onOpenMultiplayer()
-                        }
-                        .padding(horizontal = 10.dp),
+                        },
                     contentAlignment = Alignment.Center
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_public),
+                            contentDescription = "Servers & Multiplayer",
+                            tint = Color(0xFF55FF55),
+                            modifier = Modifier.size(20.dp)
+                        )
                         Box(
                             modifier = Modifier
                                 .size(6.dp)
                                 .clip(CircleShape)
                                 .background(Color(0xFF00FF88))
-                        )
-                        Text(
-                            text = "SERVERS",
-                            color = Color.White,
-                            fontFamily = MinecraftFontFamily,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold
+                                .align(Alignment.TopEnd)
                         )
                     }
                 }
@@ -1070,7 +1044,7 @@ private fun SubNavigationTabs(
                         com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
                         onTabSelected(tabIndex)
                     }
-                    .padding(horizontal = 14.dp, vertical = 6.dp),
+                    .padding(horizontal = 8.dp, vertical = 5.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -1079,7 +1053,9 @@ private fun SubNavigationTabs(
                         color = if (isSelected) Color.White else Color(0xFF8E9BAE),
                         fontFamily = MinecraftFontFamily,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        fontSize = 12.5.sp
+                        fontSize = 11.5.sp,
+                        maxLines = 1,
+                        softWrap = false
                     )
                     if (isSelected) {
                         Spacer(modifier = Modifier.height(2.dp))
@@ -1647,7 +1623,9 @@ private fun InstalledVersionsSection(
                 color = Color.White,
                 fontFamily = MinecraftFontFamily,
                 fontWeight = FontWeight.Bold,
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                maxLines = 1,
+                softWrap = false
             )
             Row(
                 modifier = Modifier
@@ -1667,7 +1645,9 @@ private fun InstalledVersionsSection(
                     color = Color(0xFF00FF88),
                     fontFamily = MinecraftFontFamily,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 11.sp
+                    fontSize = 11.sp,
+                    maxLines = 1,
+                    softWrap = false
                 )
             }
         }
@@ -1829,7 +1809,9 @@ private fun InstalledVersionsSection(
                                 text = subtitleText,
                                 color = Color(0xFFA0B4C8),
                                 fontFamily = MinecraftFontFamily,
-                                fontSize = 11.sp
+                                fontSize = 11.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
 
@@ -1841,6 +1823,7 @@ private fun InstalledVersionsSection(
                                 .background(
                                     if (isSelected) Brush.horizontalGradient(listOf(Color(0xFF0072FF), Color(0xFF00E676)))
                                     else Brush.horizontalGradient(listOf(Color(0xFF1E2838), Color(0xFF161E2C)))
+                                
                                 )
                                 .border(
                                     BorderStroke(1.dp, if (isSelected) Color(0xFF00FF88) else Color(0xFF38455A)),
@@ -1857,7 +1840,9 @@ private fun InstalledVersionsSection(
                                 color = Color.White,
                                 fontFamily = MinecraftFontFamily,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 11.5.sp
+                                fontSize = 11.5.sp,
+                                maxLines = 1,
+                                softWrap = false
                             )
                         }
                     }
@@ -2134,42 +2119,32 @@ private fun CompactBackgroundDownloadBar(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (activeInstallName != null) {
-                        Text(
-                            text = "DOWNLOADING ${activeInstallName!!.uppercase()}",
-                            color = Color.White,
-                            fontFamily = MinecraftFontFamily,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1
-                        )
-                    } else if (message != null) {
-                        Text(
-                            text = resolveAndroidString(message!!).text,
-                            color = Color.White,
-                            fontFamily = MinecraftFontFamily,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1
-                        )
-                    } else {
-                        Text(
-                            text = "DOWNLOADING GAME FILES...",
-                            color = Color.White,
-                            fontFamily = MinecraftFontFamily,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1
-                        )
+                    val dlTitle = when {
+                        activeInstallName != null -> "DOWNLOADING ${activeInstallName!!.uppercase()}"
+                        message != null -> resolveAndroidString(message!!).text
+                        else -> "DOWNLOADING GAME FILES..."
                     }
+                    Text(
+                        text = dlTitle,
+                        color = Color.White,
+                        fontFamily = MinecraftFontFamily,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
 
                     val spd = speed ?: 0L
                     if (spd > 0L) {
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "${formatFileSize(spd)}/s",
                             color = Color(0xFF55FF55),
                             fontFamily = MinecraftFontFamily,
-                            fontSize = 10.sp
+                            fontSize = 10.sp,
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
                 }
