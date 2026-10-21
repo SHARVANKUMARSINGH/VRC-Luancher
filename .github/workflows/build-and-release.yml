@@ -117,14 +117,14 @@ jobs:
           prerelease: false
           files: release-apks/*.apk
           body: |
-            ### 🚀 Vrc Luancher - Gemini Edition Release
+            ### 🚀 Vrc Luancher Release
             
-            Welcome to **Vrc Luancher - Gemini Edition**!
+            Welcome to **Vrc Luancher**!
             
             #### 🌟 Highlights & Features
             - **Nintendo OS Cleanliness & ROG RGB Gaminess**: Clean, breathable card hierarchy, zero vertical text wrapping, tactile responsive buttons, and glowing dynamic ROG Aura RGB accents.
             - **Native Execution Engine**: Integrated low-latency native execution pipeline with asynchronous command buffering, zero-copy mailbox swapchain presentation, and persistent binary pipeline caching.
-            - **New App Icon & Visual Identity**: Updated high-contrast azure diamond emblem across all mipmap densities.
+            - **Official VRC Visual Identity**: Authentic 3D VRC cube with MCPE square joystick and Google Material accents rendered across all mipmap densities.
             - **Bedrock & Java Hybrid Controls**: Optimized MCPE square joystick, customizable touch buttons, virtual trackpad mouse, and controller support.
             - **Auto-Hardware & Memory Tuning**: Dynamic renderer assignment, optimal JVM GC memory allocation, and one-tap launch.
             
