@@ -27,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.unit.Dp
@@ -218,16 +219,18 @@ fun SwitchableMouseLayout(
         )
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = modifier.zIndex(1_000_000f)) {
         val cursorShape by ZLBridgeStates.cursorShape.collectAsStateWithLifecycle()
 
         if (showMousePointer) {
             MousePointer(
-                modifier = Modifier.mouseFixedPosition(
-                    mouseSize = mouseSize,
-                    cursorShape = cursorShape,
-                    pointerPosition = pointerPosition
-                ),
+                modifier = Modifier
+                    .mouseFixedPosition(
+                        mouseSize = mouseSize,
+                        cursorShape = cursorShape,
+                        pointerPosition = pointerPosition
+                    )
+                    .zIndex(1_000_000f),
                 cursorShape = cursorShape,
                 mouseSize = mouseSize,
                 mouseFile = getMouseFile(cursorShape).ifExists(),

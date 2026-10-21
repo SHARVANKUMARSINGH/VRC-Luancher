@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.unit.IntSize
 import com.movtery.layer_controller.ControlBoxLayout
@@ -65,7 +66,9 @@ fun BoxWithConstraintsScope.PreviewControlBox(
         isDark = isLauncherInDarkTheme()
     ) {
         PreviewMouseLayout(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(1_000_000f),
             screenSize = screenSize,
             isMoveOnlyPointer = { moveOnlyPointers.contains(it) },
             onOccupiedPointer = { occupiedPointers.add(it) },
@@ -95,10 +98,12 @@ private fun PreviewMouseLayout(
     previewScenario: PreviewScenario
 ) {
     Box(
-        modifier = modifier
+        modifier = modifier.zIndex(1_000_000f)
     ) {
         SwitchableMouseLayout(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(1_000_000f),
             screenSize = screenSize,
             cursorMode = previewScenario.cursorMode,
             isMoveOnlyPointer = isMoveOnlyPointer,

@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.platform.LocalContext
@@ -618,7 +619,9 @@ fun GameScreen(
                 //虚拟鼠标控制层
                 MouseControlLayout(
                     isTouchProxyEnabled = isTouchProxyEnabled,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zIndex(1_000_000f),
                     cursorMode = cursorMode,
                     screenSize = screenSize,
                     onInputAreaRectUpdated = onInputAreaRectUpdated,
@@ -931,6 +934,7 @@ private fun MouseControlLayout(
 ) {
     Box(
         modifier = modifier
+            .zIndex(1_000_000f)
             .then(
                 if (isTouchProxyEnabled) {
                     Modifier
@@ -950,7 +954,9 @@ private fun MouseControlLayout(
         val capturedLongPressMouseAction = AllSettings.gestureLongPressMouseAction.state.toAction()
 
         SwitchableMouseLayout(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(1_000_000f),
             screenSize = screenSize,
             cursorMode = cursorMode,
             onTouch = onTouch,

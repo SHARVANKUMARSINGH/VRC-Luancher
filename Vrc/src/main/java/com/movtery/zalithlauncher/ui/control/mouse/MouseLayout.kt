@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.layout.ContentScale
@@ -177,16 +178,18 @@ fun VirtualPointerLayout(
         mutableStateOf(pos)
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = modifier.zIndex(1_000_000f)) {
         val cursorShape by ZLBridgeStates.cursorShape.collectAsStateWithLifecycle()
 
         if (showMousePointer) {
             MousePointer(
-                modifier = Modifier.mouseFixedPosition(
-                    mouseSize = mouseSize,
-                    cursorShape = cursorShape,
-                    pointerPosition = pointerPosition
-                ),
+                modifier = Modifier
+                    .mouseFixedPosition(
+                        mouseSize = mouseSize,
+                        cursorShape = cursorShape,
+                        pointerPosition = pointerPosition
+                    )
+                    .zIndex(1_000_000f),
                 cursorShape = cursorShape,
                 mouseSize = mouseSize,
                 mouseFile = getMouseFile(cursorShape).ifExists(),
@@ -360,6 +363,8 @@ fun MousePointer(
         contentDescription = null,
         alignment = imageAlignment,
         contentScale = ContentScale.Fit,
-        modifier = modifier.size(mouseSize)
+        modifier = modifier
+            .size(mouseSize)
+            .zIndex(1_000_000f)
     )
 }

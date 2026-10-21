@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerId
@@ -216,7 +217,13 @@ private fun BoxWithConstraintsScope.BaseControlBoxLayout(
                 }
             }
     ) {
-        content()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(1_000_000f)
+        ) {
+            content()
+        }
 
         ControlsRendererLayer(
             isDark = isDark,
