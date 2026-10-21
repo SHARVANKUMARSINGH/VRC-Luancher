@@ -647,21 +647,22 @@ private fun VrcTacticalHeader(
         ) {
             // Left: VRC Core Brand Emblem & Tactical Status
             Row(
+                modifier = Modifier.weight(1f, fill = false),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Hexagonal Cyber Emblem Container
+                // Cyber Emblem Container
                 Box(
                     modifier = Modifier
                         .size(36.dp)
-                        .clip(RoundedCornerShape(9.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .background(Color(0xFF0F1726))
                         .border(
                             BorderStroke(
                                 1.5.dp,
                                 Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFF00FF88)))
                             ),
-                            RoundedCornerShape(9.dp)
+                            RoundedCornerShape(10.dp)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
@@ -673,14 +674,20 @@ private fun VrcTacticalHeader(
                     )
                 }
 
-                Column(verticalArrangement = Arrangement.Center) {
+                Column(
+                    modifier = Modifier.weight(1f, fill = false),
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Text(
                         text = "VRC LAUNCHER",
                         color = Color.White,
                         fontFamily = MinecraftFontFamily,
                         fontWeight = FontWeight.Bold,
                         fontSize = 13.5.sp,
-                        letterSpacing = 0.8.sp
+                        letterSpacing = 0.8.sp,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -693,16 +700,21 @@ private fun VrcTacticalHeader(
                                 .background(Color(0xFF00FF88).copy(alpha = beaconAlpha))
                         )
                         Text(
-                            text = "BEDROCK RUNTIME • ONLINE",
+                            text = "VULKAN NATIVE • ONLINE",
                             color = Color(0xFF00FF88),
                             fontFamily = MinecraftFontFamily,
                             fontSize = 8.sp,
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 0.5.sp
+                            letterSpacing = 0.5.sp,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.width(8.dp))
 
             // Right: Interactive Gamer Profile Chip & Action Icons
             Row(
@@ -753,8 +765,9 @@ private fun VrcTacticalHeader(
                         fontWeight = FontWeight.Bold,
                         fontSize = 11.sp,
                         maxLines = 1,
+                        softWrap = false,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.widthIn(max = 80.dp)
+                        modifier = Modifier.widthIn(max = 75.dp)
                     )
 
                     Icon(
@@ -1029,11 +1042,32 @@ private fun VrcHoloStage(
     val versionName = version?.getVersionName() ?: "Minecraft 1.21.4"
     val mcVer = version?.getVersionInfo()?.minecraftVersion ?: versionName
 
+    val infiniteTransition = rememberInfiniteTransition(label = "rog_aura")
+    val auraAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.5f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "aura_pulse"
+    )
+
+    val rogRainbowBorder = Brush.horizontalGradient(
+        listOf(
+            Color(0xFF00F0FF).copy(alpha = auraAlpha),
+            Color(0xFF00FF88).copy(alpha = auraAlpha),
+            Color(0xFFA855F7).copy(alpha = auraAlpha),
+            Color(0xFFFF0055).copy(alpha = auraAlpha),
+            Color(0xFFFFB300).copy(alpha = auraAlpha)
+        )
+    )
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 6.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(
                 Brush.verticalGradient(
                     listOf(
@@ -1043,19 +1077,7 @@ private fun VrcHoloStage(
                     )
                 )
             )
-            .border(
-                BorderStroke(
-                    1.5.dp,
-                    Brush.horizontalGradient(
-                        listOf(
-                            Color(0x6600F0FF),
-                            Color(0x44A855F7),
-                            Color(0x6600FF88)
-                        )
-                    )
-                ),
-                RoundedCornerShape(16.dp)
-            )
+            .border(BorderStroke(1.5.dp, rogRainbowBorder), RoundedCornerShape(18.dp))
             .padding(14.dp)
     ) {
         Column(
@@ -1085,7 +1107,9 @@ private fun VrcHoloStage(
                             fontFamily = MinecraftFontFamily,
                             fontWeight = FontWeight.Bold,
                             fontSize = 8.5.sp,
-                            letterSpacing = 0.5.sp
+                            letterSpacing = 0.5.sp,
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
                 }
@@ -1100,11 +1124,13 @@ private fun VrcHoloStage(
                             .padding(horizontal = 5.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = "VULKAN READY",
+                            text = "VULKAN NATIVE",
                             color = Color(0xFF00FF88),
                             fontFamily = MinecraftFontFamily,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 8.sp
+                            fontSize = 8.sp,
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
                     Box(
@@ -1119,7 +1145,9 @@ private fun VrcHoloStage(
                             color = Color(0xFFD8B4FE),
                             fontFamily = MinecraftFontFamily,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 8.sp
+                            fontSize = 8.sp,
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
                 }
@@ -1178,6 +1206,7 @@ private fun VrcHoloStage(
                         fontWeight = FontWeight.Bold,
                         fontSize = 17.sp,
                         maxLines = 1,
+                        softWrap = false,
                         overflow = TextOverflow.Ellipsis,
                         style = TextStyle(
                             shadow = Shadow(
@@ -1215,15 +1244,19 @@ private fun VrcHoloStage(
                                 },
                                 fontFamily = MinecraftFontFamily,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 8.5.sp
+                                fontSize = 8.5.sp,
+                                maxLines = 1,
+                                softWrap = false
                             )
                         }
 
                         Text(
-                            text = "Java ",
+                            text = "Java Edition",
                             color = Color(0xFFA0B4C8),
                             fontFamily = MinecraftFontFamily,
-                            fontSize = 10.sp
+                            fontSize = 10.sp,
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
                 }
@@ -1250,7 +1283,9 @@ private fun VrcHoloStage(
                             color = Color(0xFF00F0FF),
                             fontFamily = MinecraftFontFamily,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 9.5.sp
+                            fontSize = 9.5.sp,
+                            maxLines = 1,
+                            softWrap = false
                         )
                         Icon(
                             painter = painterResource(R.drawable.ic_keyboard_arrow_down),
@@ -1262,36 +1297,76 @@ private fun VrcHoloStage(
                 }
             }
 
-            // Integrated 4-Metric Real-Time Telemetry Bar
-            Row(
+            // Integrated Real-Time Gamer Telemetry Bar (Scrollable to prevent narrow-screen wrapping)
+            LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color(0x990A0E18))
                     .border(BorderStroke(1.dp, Color(0x2238455A)), RoundedCornerShape(8.dp))
                     .padding(horizontal = 8.dp, vertical = 6.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Metric 1: Renderer
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                    Text(text = "⚡", fontSize = 9.sp)
-                    Text(text = "VULKAN ZINK", color = Color(0xFF00FF88), fontFamily = MinecraftFontFamily, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                item {
+                    // Metric 1: Renderer
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                        Text(text = "⚡", fontSize = 9.sp)
+                        Text(
+                            text = "VULKAN NATIVE",
+                            color = Color(0xFF00FF88),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false
+                        )
+                    }
                 }
-                // Metric 2: Memory
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                    Text(text = "🧠", fontSize = 9.sp)
-                    Text(text = "4.0 GB ALLOC", color = Color(0xFF00F0FF), fontFamily = MinecraftFontFamily, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                item {
+                    // Metric 2: Memory
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                        Text(text = "🧠", fontSize = 9.sp)
+                        Text(
+                            text = "4.0 GB ALLOC",
+                            color = Color(0xFF00F0FF),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false
+                        )
+                    }
                 }
-                // Metric 3: Controls
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                    Text(text = "🎮", fontSize = 9.sp)
-                    Text(text = "BEDROCK HUD", color = Color(0xFFA855F7), fontFamily = MinecraftFontFamily, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                item {
+                    // Metric 3: Controls
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                        Text(text = "🎮", fontSize = 9.sp)
+                        Text(
+                            text = "BEDROCK HUD",
+                            color = Color(0xFFA855F7),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false
+                        )
+                    }
                 }
-                // Metric 4: Runtime
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                    Text(text = "☕", fontSize = 9.sp)
-                    Text(text = "JDK 21", color = Color(0xFFFFB300), fontFamily = MinecraftFontFamily, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                item {
+                    // Metric 4: Runtime
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                        Text(text = "☕", fontSize = 9.sp)
+                        Text(
+                            text = "JDK 21",
+                            color = Color(0xFFFFB300),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false
+                        )
+                    }
                 }
             }
         }
@@ -1397,7 +1472,10 @@ private fun VrcLaunchIgnitionConsole(
                         )
                     }
 
-                    Column(verticalArrangement = Arrangement.Center) {
+                    Column(
+                        modifier = Modifier.weight(1f, fill = false),
+                        verticalArrangement = Arrangement.Center
+                    ) {
                         Text(
                             text = "LAUNCH MINECRAFT",
                             color = Color.White,
@@ -1405,6 +1483,9 @@ private fun VrcLaunchIgnitionConsole(
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             letterSpacing = 1.2.sp,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis,
                             style = TextStyle(
                                 shadow = Shadow(
                                     color = Color(0x99000000),
@@ -1414,11 +1495,14 @@ private fun VrcLaunchIgnitionConsole(
                             )
                         )
                         Text(
-                            text = "READY TO PLAY • VULKAN ACCELERATED",
+                            text = "READY TO PLAY • NATIVE ENGINE",
                             color = Color(0xEEFFFFFF),
                             fontFamily = MinecraftFontFamily,
                             fontSize = 8.5.sp,
-                            letterSpacing = 0.5.sp
+                            letterSpacing = 0.5.sp,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -1459,7 +1543,10 @@ private fun VrcLaunchIgnitionConsole(
                         color = Color(0xFF00F0FF),
                         fontFamily = MinecraftFontFamily,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 9.sp
+                        fontSize = 9.sp,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -1493,7 +1580,10 @@ private fun VrcLaunchIgnitionConsole(
                         color = Color(0xFF00FF88),
                         fontFamily = MinecraftFontFamily,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 9.sp
+                        fontSize = 9.sp,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -1523,11 +1613,14 @@ private fun VrcLaunchIgnitionConsole(
                         modifier = Modifier.size(13.dp)
                     )
                     Text(
-                        text = "GAME FILES",
+                        text = "FILES",
                         color = Color(0xFFA855F7),
                         fontFamily = MinecraftFontFamily,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 9.sp
+                        fontSize = 9.sp,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -1585,7 +1678,9 @@ private fun VrcCyberBentoGrid(
                             color = Color(0xFF00F0FF),
                             fontFamily = MinecraftFontFamily,
                             fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false
                         )
                         Box(
                             modifier = Modifier
@@ -1600,13 +1695,19 @@ private fun VrcCyberBentoGrid(
                             color = Color.White,
                             fontFamily = MinecraftFontFamily,
                             fontSize = 11.5.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "Tap to customize keys",
+                            text = "Custom Controls",
                             color = Color(0xFF8E9BAE),
                             fontFamily = MinecraftFontFamily,
-                            fontSize = 8.sp
+                            fontSize = 8.sp,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -1640,7 +1741,9 @@ private fun VrcCyberBentoGrid(
                             color = Color(0xFF00FF88),
                             fontFamily = MinecraftFontFamily,
                             fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false
                         )
                         Box(
                             modifier = Modifier
@@ -1651,17 +1754,23 @@ private fun VrcCyberBentoGrid(
                     }
                     Column {
                         Text(
-                            text = "Vulkan Zink",
+                            text = "Vulkan Native",
                             color = Color.White,
                             fontFamily = MinecraftFontFamily,
                             fontSize = 11.5.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "Hardware GLES3 active",
+                            text = "Zero-Copy Pipeline",
                             color = Color(0xFF8E9BAE),
                             fontFamily = MinecraftFontFamily,
-                            fontSize = 8.sp
+                            fontSize = 8.sp,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -1701,7 +1810,9 @@ private fun VrcCyberBentoGrid(
                             color = Color(0xFFA855F7),
                             fontFamily = MinecraftFontFamily,
                             fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false
                         )
                         Box(
                             modifier = Modifier
@@ -1716,13 +1827,19 @@ private fun VrcCyberBentoGrid(
                             color = Color.White,
                             fontFamily = MinecraftFontFamily,
                             fontSize = 11.5.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "Direct join & P2P",
+                            text = "Direct Join & P2P",
                             color = Color(0xFF8E9BAE),
                             fontFamily = MinecraftFontFamily,
-                            fontSize = 8.sp
+                            fontSize = 8.sp,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -1756,7 +1873,9 @@ private fun VrcCyberBentoGrid(
                             color = Color(0xFFFFB300),
                             fontFamily = MinecraftFontFamily,
                             fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false
                         )
                         Box(
                             modifier = Modifier
@@ -1771,13 +1890,19 @@ private fun VrcCyberBentoGrid(
                             color = Color.White,
                             fontFamily = MinecraftFontFamily,
                             fontSize = 11.5.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = "Shaders & Addons",
                             color = Color(0xFF8E9BAE),
                             fontFamily = MinecraftFontFamily,
-                            fontSize = 8.sp
+                            fontSize = 8.sp,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -1814,7 +1939,9 @@ private fun VrcHoloCartridgeDeck(
                 fontFamily = MinecraftFontFamily,
                 fontWeight = FontWeight.Bold,
                 fontSize = 13.sp,
-                letterSpacing = 0.5.sp
+                letterSpacing = 0.5.sp,
+                maxLines = 1,
+                softWrap = false
             )
 
             Box(
@@ -1834,7 +1961,9 @@ private fun VrcHoloCartridgeDeck(
                     color = Color(0xFF00FF88),
                     fontFamily = MinecraftFontFamily,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 9.sp
+                    fontSize = 9.sp,
+                    maxLines = 1,
+                    softWrap = false
                 )
             }
         }
@@ -1860,7 +1989,10 @@ private fun VrcHoloCartridgeDeck(
                     color = Color(0xFF00F0FF),
                     fontFamily = MinecraftFontFamily,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 11.sp
+                    fontSize = 11.sp,
+                    maxLines = 1,
+                    softWrap = false,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         } else {
@@ -1940,7 +2072,9 @@ private fun VrcHoloCartridgeDeck(
                                         color = if (isSelected) Color(0xFF00FF88) else Color(0xFFA0B4C8),
                                         fontFamily = MinecraftFontFamily,
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 7.5.sp
+                                        fontSize = 7.5.sp,
+                                        maxLines = 1,
+                                        softWrap = false
                                     )
                                 }
                             }
@@ -1957,6 +2091,7 @@ private fun VrcHoloCartridgeDeck(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 12.sp,
                                     maxLines = 1,
+                                    softWrap = false,
                                     overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.weight(1f)
                                 )
@@ -1977,7 +2112,9 @@ private fun VrcHoloCartridgeDeck(
                                         color = Color.White,
                                         fontFamily = MinecraftFontFamily,
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 8.sp
+                                        fontSize = 8.sp,
+                                        maxLines = 1,
+                                        softWrap = false
                                     )
                                 }
                             }
@@ -2016,7 +2153,9 @@ private fun VrcHoloCartridgeDeck(
                                 color = Color(0xFFA0B4C8),
                                 fontFamily = MinecraftFontFamily,
                                 fontSize = 8.5.sp,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                softWrap = false
                             )
                         }
                     }

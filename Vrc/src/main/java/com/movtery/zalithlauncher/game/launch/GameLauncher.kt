@@ -189,6 +189,7 @@ class GameLauncher(
         if (Renderers.isCurrentRendererValid()) {
             setRendererEnv(envMap)
         }
+        com.movtery.zalithlauncher.game.engine.VrcNativeVulkanEngine.applyEnvironment(envMap, version.getGameDir())
         envMap["ZALITH_VERSION_CODE"] = BuildConfig.VERSION_CODE.toString()
 
         //lwjgl3ify 实例：注入 XDG 数据目录兜底，避免其向不存在的 ~/.local/share
@@ -203,6 +204,7 @@ class GameLauncher(
 
     override fun dlopenEngine() {
         super.dlopenEngine()
+        com.movtery.zalithlauncher.game.engine.VrcNativeVulkanEngine.preloadNativeLibraries()
         appendTitle("DLOPEN Renderer")
 
         //声音引擎加载后，dlopen渲染器的库
@@ -224,6 +226,7 @@ class GameLauncher(
         if (Renderers.isCurrentRendererValid()) {
             args.add("-Dorg.lwjgl.opengl.libname=${getRendererLibrary()}")
         }
+        com.movtery.zalithlauncher.game.engine.VrcNativeVulkanEngine.applyJvmArguments(args)
     }
 
     private suspend fun launchGame(

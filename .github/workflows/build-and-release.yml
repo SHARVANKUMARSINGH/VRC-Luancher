@@ -117,15 +117,15 @@ jobs:
           prerelease: false
           files: release-apks/*.apk
           body: |
-            ### 🚀 Vrc Luancher Release
+            ### 🚀 Vrc Luancher - Gemini Edition Release
             
-            Welcome to **Vrc Luancher**!
+            Welcome to **Vrc Luancher - Gemini Edition**!
             
             #### 🌟 Highlights & Features
-            - **Authentic New MCPE Square Joystick**: Pixel-accurate Bedrock HUD styling, 3D pixel shading highlights, square track boundaries, and native sprint-lock.
-            - **Google Apps Design & Material 3**: Beautiful Google color palette (Google Blue, Green, Yellow, Red) and expressive Material 3 shapes.
-            - **Auto-Hardware & OpenGL Detection**: Automatically selects the best OpenGL ES / Vulkan renderer (Kopper Zink, Freedreno/Turnip, NG-GL4ES) and optimal memory allocation.
-            - **Native Speed Performance**: Multi-threaded Mesa OpenGL (`mesa_glthread=true`), low-latency G1GC JVM parameters, and maximized native execution speed.
-            - **Pre-Settings Gear Menu**: One-tap auto-optimization, performance presets, and live joystick test.
+            - **Nintendo OS Cleanliness & ROG RGB Gaminess**: Clean, breathable card hierarchy, zero vertical text wrapping, tactile responsive buttons, and glowing dynamic ROG Aura RGB accents.
+            - **Native Execution Engine**: Integrated low-latency native execution pipeline with asynchronous command buffering, zero-copy mailbox swapchain presentation, and persistent binary pipeline caching.
+            - **New App Icon & Visual Identity**: Updated high-contrast azure diamond emblem across all mipmap densities.
+            - **Bedrock & Java Hybrid Controls**: Optimized MCPE square joystick, customizable touch buttons, virtual trackpad mouse, and controller support.
+            - **Auto-Hardware & Memory Tuning**: Dynamic renderer assignment, optimal JVM GC memory allocation, and one-tap launch.
             
             Built automatically via GitHub Actions CI/CD.
