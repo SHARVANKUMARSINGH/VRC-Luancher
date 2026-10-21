@@ -27,6 +27,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
@@ -194,8 +196,8 @@ fun LauncherScreen(
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                // Top Account Header with Interactive Account Switcher Dropdown and Files / Multiplayer Quick Actions
-                TopAccountHeader(
+                // Top Tactical Command Header (Custom VRC Cyber HUD Bar)
+                VrcTacticalHeader(
                     account = account,
                     accountsList = accountsList,
                     onSelectAccount = { selectedAcc ->
@@ -253,8 +255,8 @@ fun LauncherScreen(
                                             .verticalScroll(rememberScrollState())
                                             .padding(bottom = 6.dp)
                                     ) {
-                                        // Hero Card (Dynamic Key Art per Version)
-                                        HeroMinecraftCard(
+                                        // 1. Holographic Version Showcase Pod
+                                        VrcHoloStage(
                                             version = currentVersion,
                                             account = account,
                                             onVersionClick = { showVersionMenu = true }
@@ -267,14 +269,14 @@ fun LauncherScreen(
                                                 onDismissRequest = { showVersionMenu = false },
                                                 modifier = Modifier
                                                     .width(280.dp)
-                                                    .background(Color(0xFF1C1C1E))
-                                                    .border(BorderStroke(1.5.dp, Color(0xFF383838)), RoundedCornerShape(3.dp))
+                                                    .background(Color(0xFF0E131F))
+                                                    .border(BorderStroke(1.5.dp, Color(0xFF00F0FF)), RoundedCornerShape(6.dp))
                                             ) {
                                                 if (allVersions.isEmpty()) {
                                                     DropdownMenuItem(
                                                         text = {
                                                             Text(
-                                                                text = "Latest Release (26.3)",
+                                                                text = "Latest Release (1.21.4)",
                                                                 color = Color.White,
                                                                 fontFamily = MinecraftFontFamily,
                                                                 fontWeight = FontWeight.Bold
@@ -312,7 +314,7 @@ fun LauncherScreen(
                                                     text = {
                                                         Text(
                                                             text = "+ Manage Installations",
-                                                            color = Color(0xFF55FF55),
+                                                            color = Color(0xFF00FF88),
                                                             fontFamily = MinecraftFontFamily,
                                                             fontWeight = FontWeight.Bold
                                                         )
@@ -325,21 +327,21 @@ fun LauncherScreen(
                                             }
                                         }
 
-                                        // PLAY Action Row (1:1 Replica Textured Green PLAY Button)
-                                        PlayActionRow(
+                                        // 2. Hyper-Tactile Launch Ignition Console
+                                        VrcLaunchIgnitionConsole(
                                             account = account,
                                             isLaunching = isRefreshingVersions,
                                             onPlayClick = {
                                                 val isDownloading = runningTasks.any { it.id != com.movtery.zalithlauncher.game.account.MICROSOFT_LOGGING_TASK }
                                                 if (isDownloading) {
                                                     Toast.makeText(context, "Please wait for the game to finish downloading...", Toast.LENGTH_SHORT).show()
-                                                    return@PlayActionRow
+                                                    return@VrcLaunchIgnitionConsole
                                                 }
                                                 if (account == null) {
                                                     Toast.makeText(context, "Please create an account first!", Toast.LENGTH_SHORT).show()
                                                     LauncherNavState.selectedBottomNav = 4
                                                     LauncherNavState.activeTab = -1
-                                                    return@PlayActionRow
+                                                    return@VrcLaunchIgnitionConsole
                                                 }
                                                 val hasDownloadedVersion = allVersions.any { ver ->
                                                     val clientJar = ver.getClientJar()
@@ -350,7 +352,7 @@ fun LauncherScreen(
                                                 if (!hasDownloadedVersion) {
                                                     Toast.makeText(context, "Please create an installation first!", Toast.LENGTH_SHORT).show()
                                                     LauncherNavState.selectedBottomNav = 2
-                                                    return@PlayActionRow
+                                                    return@VrcLaunchIgnitionConsole
                                                 }
                                                 val targetVersion = currentVersion?.takeIf { ver ->
                                                     val clientJar = ver.getClientJar()
@@ -366,30 +368,37 @@ fun LauncherScreen(
                                                 if (targetVersion == null) {
                                                     Toast.makeText(context, "Please create an installation first!", Toast.LENGTH_SHORT).show()
                                                     LauncherNavState.selectedBottomNav = 2
-                                                    return@PlayActionRow
+                                                    return@VrcLaunchIgnitionConsole
                                                 }
                                                 onLaunchGame(targetVersion)
+                                            },
+                                            onConfigureControls = { showPreSettingsDialog = true },
+                                            onConfigureGraphics = { showPreSettingsDialog = true },
+                                            onOpenFiles = {
+                                                com.movtery.zalithlauncher.filemanager.FileManagerLauncher.launch(
+                                                    context = context,
+                                                    rootPath = com.movtery.zalithlauncher.path.PathManager.DIR_FILES_EXTERNAL.absolutePath,
+                                                    currentPath = null,
+                                                    logsDir = com.movtery.zalithlauncher.path.PathManager.DIR_LAUNCHER_LOGS.absolutePath
+                                                )
                                             }
                                         )
 
-                                        // VRC Quick Controls & Performance Deck
-                                        VrcControlDeck(
-                                            onConfigureControls = {
-                                                showPreSettingsDialog = true
-                                            },
-                                            onConfigureGraphics = {
-                                                showPreSettingsDialog = true
-                                            },
+                                        // 3. 2x2 Cyber Bento Grid (Touch HUD, GPU Core, Online Hub, Mods Store)
+                                        VrcCyberBentoGrid(
+                                            onConfigureControls = { showPreSettingsDialog = true },
+                                            onConfigureGraphics = { showPreSettingsDialog = true },
                                             onOpenMultiplayer = {
                                                 backStackViewModel.mainScreen.removeAndNavigateTo(
                                                     removes = backStackViewModel.clearBeforeNavKeys,
                                                     screenKey = NormalNavKey.Multiplayer
                                                 )
-                                            }
+                                            },
+                                            onOpenModsHub = { LauncherNavState.selectedBottomNav = 3 }
                                         )
 
-                                        // Installed Versions Cards (Replaced Security Advisory Card)
-                                        InstalledVersionsSection(
+                                        // 4. Horizontal Holographic Game Cartridge Deck
+                                        VrcHoloCartridgeDeck(
                                             allVersions = allVersions,
                                             currentVersion = currentVersion,
                                             onSelectVersion = { ver ->
@@ -399,13 +408,13 @@ fun LauncherScreen(
                                                 val isDownloading = runningTasks.any { it.id != com.movtery.zalithlauncher.game.account.MICROSOFT_LOGGING_TASK }
                                                 if (isDownloading) {
                                                     Toast.makeText(context, "Please wait for the game to finish downloading...", Toast.LENGTH_SHORT).show()
-                                                    return@InstalledVersionsSection
+                                                    return@VrcHoloCartridgeDeck
                                                 }
                                                 if (account == null) {
                                                     Toast.makeText(context, "Please create an account first!", Toast.LENGTH_SHORT).show()
                                                     LauncherNavState.selectedBottomNav = 4
                                                     LauncherNavState.activeTab = -1
-                                                    return@InstalledVersionsSection
+                                                    return@VrcHoloCartridgeDeck
                                                 }
                                                 val clientJar = ver.getClientJar()
                                                 val verMc = ver.getVersionInfo()?.minecraftVersion ?: ver.getVersionName()
@@ -414,7 +423,7 @@ fun LauncherScreen(
                                                 if (!isDownloaded) {
                                                     Toast.makeText(context, "Please create an installation first!", Toast.LENGTH_SHORT).show()
                                                     LauncherNavState.selectedBottomNav = 2
-                                                    return@InstalledVersionsSection
+                                                    return@VrcHoloCartridgeDeck
                                                 }
                                                 VersionsManager.saveVersion(ver)
                                                 onLaunchGame(ver)
@@ -586,16 +595,12 @@ private fun MinecraftLaunchLoadingOverlay() {
 }
 
 /**
- * Top Account Header Bar:
- * Displays Player Head with cyan/blue border, Player Name with chevron arrow, and (Microsoft Account)
- */
-/**
- * Top Account Header Bar:
- * Displays Player Head with cyan/blue border, Player Name with interactive dropdown menu for instant account switching,
- * and navigation to the full Profile / Manage Account screen.
+ * VRC Tactical Command Header:
+ * Floating cyber HUD bar with glowing VRC Core Emblem, real-time status beacon,
+ * interactive gamer profile capsule, and quick hardware / files actions.
  */
 @Composable
-private fun TopAccountHeader(
+private fun VrcTacticalHeader(
     account: Account?,
     accountsList: List<Account>,
     onSelectAccount: (Account) -> Unit,
@@ -609,117 +614,164 @@ private fun TopAccountHeader(
     var offlineUsername by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    Box {
+    val infiniteTransition = rememberInfiniteTransition(label = "vrc_beacon")
+    val beaconAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.35f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "beacon_pulse"
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xF0080C14),
+                        Color(0xE60D1322),
+                        Color(0xD9080C14)
+                    )
+                )
+            )
+            .border(BorderStroke(1.dp, Color(0x2200F0FF)))
+            .padding(horizontal = 12.dp, vertical = 7.dp)
+    ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xE60E131F))
-                .border(BorderStroke(1.dp, Color(0x2200F0FF)))
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Left: Player Head and Name clickable for Account Switcher
+            // Left: VRC Core Brand Emblem & Tactical Status
             Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable {
-                        com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
-                        expanded = true
-                    }
-                    .padding(end = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Player Head Avatar with glowing cyber gradient border
+                // Hexagonal Cyber Emblem Container
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(9.dp))
+                        .background(Color(0xFF0F1726))
                         .border(
                             BorderStroke(
                                 1.5.dp,
                                 Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFF00FF88)))
                             ),
-                            RoundedCornerShape(8.dp)
-                        )
-                        .background(Color(0xFF161C28)),
+                            RoundedCornerShape(9.dp)
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
-                    val skinFile = account?.getSkinFile()
-                    if (account != null && skinFile != null && skinFile.exists()) {
-                        PlayerFace(
-                            account = account,
-                            avatarSize = 36.dp
-                        )
-                    } else {
-                        Image(
-                            painter = painterResource(R.drawable.img_vrc_emblem),
-                            contentDescription = "VRC Player",
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(RoundedCornerShape(6.dp)),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
+                    Image(
+                        painter = painterResource(R.drawable.img_vrc_emblem),
+                        contentDescription = "VRC Core",
+                        modifier = Modifier.size(24.dp),
+                        contentScale = ContentScale.Fit
+                    )
                 }
 
-                Spacer(modifier = Modifier.width(10.dp))
-
-                Column(
-                    verticalArrangement = Arrangement.Center
-                ) {
+                Column(verticalArrangement = Arrangement.Center) {
+                    Text(
+                        text = "VRC LAUNCHER",
+                        color = Color.White,
+                        fontFamily = MinecraftFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.5.sp,
+                        letterSpacing = 0.8.sp
+                    )
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Text(
-                            text = account?.username ?: "VRC Player",
-                            color = Color.White,
-                            fontFamily = MinecraftFontFamily,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF00FF88).copy(alpha = beaconAlpha))
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            painter = painterResource(R.drawable.ic_keyboard_arrow_down),
-                            contentDescription = null,
-                            tint = Color(0xFF00F0FF),
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                    val isMicrosoft = account?.accountType == com.movtery.zalithlauncher.game.account.AccountType.MICROSOFT.tag
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(3.dp))
-                            .background(if (isMicrosoft) Color(0x334285F4) else Color(0x3300FF88))
-                            .padding(horizontal = 5.dp, vertical = 1.5.dp)
-                    ) {
                         Text(
-                            text = if (account != null) getAccountTypeName(account).uppercase() else "NO ACCOUNT",
-                            color = if (isMicrosoft) Color(0xFF8AB4F8) else Color(0xFF00FF88),
+                            text = "BEDROCK RUNTIME • ONLINE",
+                            color = Color(0xFF00FF88),
                             fontFamily = MinecraftFontFamily,
+                            fontSize = 8.sp,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 9.sp,
-                            maxLines = 1,
-                            softWrap = false
+                            letterSpacing = 0.5.sp
                         )
                     }
                 }
             }
 
-            // Right: Pre-Settings (Gear), Files and Multiplayer Action Buttons
+            // Right: Interactive Gamer Profile Chip & Action Icons
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                // Gear Icon for Hardware Pre-Settings & OpenGL Setup
+                // Player Profile Capsule (Tap to open account switcher dropdown)
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color(0xCC111827))
+                        .border(BorderStroke(1.dp, Color(0x3300F0FF)), RoundedCornerShape(20.dp))
+                        .clickable {
+                            com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                            expanded = true
+                        }
+                        .padding(horizontal = 6.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    // Avatar Face
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF1E293B)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        val skinFile = account?.getSkinFile()
+                        if (account != null && skinFile != null && skinFile.exists()) {
+                            PlayerFace(
+                                account = account,
+                                avatarSize = 24.dp
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(R.drawable.img_vrc_emblem),
+                                contentDescription = "Player",
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = account?.username ?: "Guest",
+                        color = Color.White,
+                        fontFamily = MinecraftFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 11.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.widthIn(max = 80.dp)
+                    )
+
+                    Icon(
+                        painter = painterResource(R.drawable.ic_keyboard_arrow_down),
+                        contentDescription = null,
+                        tint = Color(0xFF00F0FF),
+                        modifier = Modifier.size(14.dp)
+                    )
+                }
+
+                // Gear Settings Action (Compact 32x32dp cyber glass)
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xFF131C2D))
-                        .border(BorderStroke(1.5.dp, Color(0xFF00F0FF)), RoundedCornerShape(10.dp))
+                        .size(32.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color(0xCC111827))
+                        .border(BorderStroke(1.dp, Color(0x3300F0FF)), RoundedCornerShape(8.dp))
                         .clickable {
                             com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
                             onOpenPreSettings()
@@ -728,19 +780,19 @@ private fun TopAccountHeader(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_settings_filled),
-                        contentDescription = "Pre-Settings & OpenGL Setup",
+                        contentDescription = "Setup",
                         tint = Color(0xFF00F0FF),
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
 
-                // Files Quick Action
+                // Files Action (Compact 32x32dp cyber glass)
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xFF181E2C))
-                        .border(BorderStroke(1.dp, Color(0xFF38455A)), RoundedCornerShape(10.dp))
+                        .size(32.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color(0xCC111827))
+                        .border(BorderStroke(1.dp, Color(0x338E9BAE)), RoundedCornerShape(8.dp))
                         .clickable {
                             com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
                             com.movtery.zalithlauncher.filemanager.FileManagerLauncher.launch(
@@ -756,57 +808,26 @@ private fun TopAccountHeader(
                         painter = painterResource(R.drawable.ic_folder_filled),
                         contentDescription = "Files",
                         tint = Color(0xFFA0B0C4),
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(15.dp)
                     )
-                }
-
-                // Multiplayer Quick Action (Glowing Emerald Button)
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Brush.horizontalGradient(listOf(Color(0xFF0D5230), Color(0xFF13683E))))
-                        .border(BorderStroke(1.5.dp, Color(0xFF00FF88)), RoundedCornerShape(10.dp))
-                        .clickable {
-                            com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
-                            onOpenMultiplayer()
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_public),
-                            contentDescription = "Servers & Multiplayer",
-                            tint = Color(0xFF55FF55),
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Box(
-                            modifier = Modifier
-                                .size(6.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFF00FF88))
-                                .align(Alignment.TopEnd)
-                        )
-                    }
                 }
             }
         }
 
-        // Account Dropdown Selector
+        // Account Switcher Dropdown Menu
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier
-                .width(280.dp)
-                .background(Color(0xFF1C1C1E))
-                .border(BorderStroke(1.5.dp, Color(0xFF383838)), RoundedCornerShape(3.dp))
+                .background(Color(0xFF0E131F))
+                .border(BorderStroke(1.5.dp, Color(0xFF00F0FF)), RoundedCornerShape(6.dp))
         ) {
             Text(
-                text = "SWITCH ACCOUNT",
-                color = Color(0xFFAAAAAA),
+                text = "ACCOUNT SELECTOR",
+                color = Color(0xFF00F0FF),
                 fontFamily = MinecraftFontFamily,
                 fontWeight = FontWeight.Bold,
-                fontSize = 11.sp,
+                fontSize = 10.sp,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
             )
 
@@ -839,7 +860,7 @@ private fun TopAccountHeader(
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = acc.username,
-                                        color = if (isCurrent) Color(0xFF55FF55) else Color.White,
+                                        color = if (isCurrent) Color(0xFF00FF88) else Color.White,
                                         fontFamily = MinecraftFontFamily,
                                         fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
                                         fontSize = 13.sp,
@@ -855,7 +876,7 @@ private fun TopAccountHeader(
                                 if (isCurrent) {
                                     Text(
                                         text = "ACTIVE",
-                                        color = Color(0xFF55FF55),
+                                        color = Color(0xFF00FF88),
                                         fontFamily = MinecraftFontFamily,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 9.sp
@@ -875,7 +896,7 @@ private fun TopAccountHeader(
                 text = {
                     Text(
                         text = "+ Add Offline Account",
-                        color = Color(0xFF55FF55),
+                        color = Color(0xFF00FF88),
                         fontFamily = MinecraftFontFamily,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp
@@ -890,8 +911,8 @@ private fun TopAccountHeader(
             DropdownMenuItem(
                 text = {
                     Text(
-                        text = "Manage Accounts & Settings",
-                        color = Color(0xFFAAAAAA),
+                        text = "Manage Accounts & Logins",
+                        color = Color(0xFF00F0FF),
                         fontFamily = MinecraftFontFamily,
                         fontWeight = FontWeight.Normal,
                         fontSize = 12.sp
@@ -908,7 +929,7 @@ private fun TopAccountHeader(
     if (showAddOfflineDialog) {
         AlertDialog(
             onDismissRequest = { showAddOfflineDialog = false },
-            containerColor = Color(0xFF1C1C1E),
+            containerColor = Color(0xFF101626),
             title = {
                 Text(
                     text = "ADD OFFLINE ACCOUNT",
@@ -933,10 +954,10 @@ private fun TopAccountHeader(
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color(0xFF242426),
-                            unfocusedContainerColor = Color(0xFF242426),
-                            focusedBorderColor = Color(0xFF55FF55),
-                            unfocusedBorderColor = Color(0xFF383838),
+                            focusedContainerColor = Color(0xFF182236),
+                            unfocusedContainerColor = Color(0xFF182236),
+                            focusedBorderColor = Color(0xFF00F0FF),
+                            unfocusedBorderColor = Color(0xFF38455A),
                             focusedTextColor = Color.White,
                             unfocusedTextColor = Color.White
                         )
@@ -989,221 +1010,288 @@ private fun TopAccountHeader(
 }
 
 /**
- * Hero Card with authentic Wilderness Bound hero banner,
- * centered 3D embossed MINECRAFT JAVA EDITION typography logo, hardware telemetry badges,
- * and bottom cyber version selector cassette.
+ * VRC Holographic Showcase Stage:
+ * Displays active game version deployment with 3D pedestal, version name typography,
+ * loader indicators, and integrated 4-metric real-time telemetry HUD.
  */
 @Composable
-private fun HeroMinecraftCard(
+private fun VrcHoloStage(
     version: Version?,
     account: Account?,
     onVersionClick: () -> Unit
 ) {
-    val latestReleaseVersion by MinecraftOfficialContentManager.latestReleaseVersion.collectAsStateWithLifecycle()
-
     val verIconFile = remember(version) { version?.getVersionIconFile() }
     val verHasCustomIcon = verIconFile != null && verIconFile.exists()
     val verFallbackIcon = remember(version) {
         version?.let { com.movtery.zalithlauncher.ui.screens.content.elements.getLoaderIconRes(it.getVersionInfo()?.loaderInfo?.loader) } ?: R.drawable.img_minecraft
     }
+    val loaderName = version?.getVersionInfo()?.loaderInfo?.loader?.displayName ?: "Vanilla"
+    val versionName = version?.getVersionName() ?: "Minecraft 1.21.4"
+    val mcVer = version?.getVersionInfo()?.minecraftVersion ?: versionName
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 6.dp)
-            .height(295.dp)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF0F1522))
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF111726),
+                        Color(0xFF0B101C),
+                        Color(0xFF070A12)
+                    )
+                )
+            )
             .border(
                 BorderStroke(
                     1.5.dp,
-                    Brush.linearGradient(
-                        listOf(Color(0x7700F0FF), Color(0x337928CA), Color(0x7700FF88))
+                    Brush.horizontalGradient(
+                        listOf(
+                            Color(0x6600F0FF),
+                            Color(0x44A855F7),
+                            Color(0x6600FF88)
+                        )
                     )
                 ),
                 RoundedCornerShape(16.dp)
             )
+            .padding(14.dp)
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            // Background Artwork
-            Image(
-                painter = painterResource(R.drawable.img_hero_wilderness),
-                contentDescription = "Minecraft Wilderness Bound Hero Banner",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.Center
-            )
-
-            // Dynamic vignette scrim
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            0.0f to Color(0x33000000),
-                            0.45f to Color(0x44000000),
-                            0.70f to Color(0x990A0E18),
-                            1.0f to Color(0xF00A0E18)
-                        )
-                    )
-            )
-
-            // Top Hardware Spec Badges
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Header Tag Row
             Row(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color(0x88000000))
-                        .border(BorderStroke(1.dp, Color(0x5500F0FF)), RoundedCornerShape(4.dp))
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Text(
-                        text = "ARM64",
-                        color = Color(0xFF00F0FF),
-                        fontFamily = MinecraftFontFamily,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Color(0x3300F0FF))
+                            .border(BorderStroke(1.dp, Color(0x6600F0FF)), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "// ACTIVE INSTANCE",
+                            color = Color(0xFF00F0FF),
+                            fontFamily = MinecraftFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 8.5.sp,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
                 }
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color(0x88000000))
-                        .border(BorderStroke(1.dp, Color(0x5500FF88)), RoundedCornerShape(4.dp))
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        text = "VULKAN GLES",
-                        color = Color(0xFF00FF88),
-                        fontFamily = MinecraftFontFamily,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+
+                // Specs Badges
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Color(0x3300FF88))
+                            .border(BorderStroke(1.dp, Color(0x5500FF88)), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 5.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "VULKAN READY",
+                            color = Color(0xFF00FF88),
+                            fontFamily = MinecraftFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 8.sp
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Color(0x33A855F7))
+                            .border(BorderStroke(1.dp, Color(0x55A855F7)), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 5.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "ARM64 JIT",
+                            color = Color(0xFFD8B4FE),
+                            fontFamily = MinecraftFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 8.sp
+                        )
+                    }
                 }
             }
 
-            // Minecraft Java Edition Typography Logo positioned in upper-middle area
-            Image(
-                painter = painterResource(R.drawable.img_mc_java_logo),
-                contentDescription = "Minecraft Java Edition",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .offset(y = (-20).dp)
-                    .fillMaxWidth(0.85f)
-                    .height(68.dp),
-                contentScale = ContentScale.Fit
-            )
-
-            // Bottom controls inside Hero Card
+            // Center Showcase: Pedestal + Version Title + Switch Button
             Row(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Version Selector Dropdown Pill (Cyber Glass Cassette Style)
-                Row(
+                // 3D Hologram Pedestal Box
+                Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xDF101626))
-                        .border(BorderStroke(1.5.dp, Color(0x6600F0FF)), RoundedCornerShape(10.dp))
-                        .clickable(onClick = {
-                            com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
-                            onVersionClick()
-                        })
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .size(52.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFF131C2D))
+                        .border(
+                            BorderStroke(
+                                1.5.dp,
+                                Brush.linearGradient(
+                                    listOf(Color(0xFF00F0FF), Color(0xFFA855F7))
+                                )
+                            ),
+                            RoundedCornerShape(12.dp)
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
                     if (verHasCustomIcon) {
                         AsyncImage(
                             model = verIconFile,
-                            contentDescription = "Selected Version Icon",
+                            contentDescription = versionName,
                             modifier = Modifier
-                                .size(30.dp)
+                                .size(36.dp)
                                 .clip(RoundedCornerShape(6.dp)),
                             contentScale = ContentScale.Fit
                         )
                     } else {
                         Image(
                             painter = painterResource(verFallbackIcon),
-                            contentDescription = "Selected Version Icon",
+                            contentDescription = versionName,
                             modifier = Modifier
-                                .size(30.dp)
+                                .size(36.dp)
                                 .clip(RoundedCornerShape(6.dp)),
                             contentScale = ContentScale.Fit
                         )
                     }
+                }
 
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Column {
-                        val loaderName = version?.getVersionInfo()?.loaderInfo?.loader?.displayName ?: "Vanilla"
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = versionName,
+                        color = Color.White,
+                        fontFamily = MinecraftFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = TextStyle(
+                            shadow = Shadow(
+                                color = Color(0xAA00F0FF),
+                                offset = Offset(0f, 2f),
+                                blurRadius = 4f
+                            )
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(3.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(3.dp))
+                                .background(
+                                    when (loaderName.lowercase()) {
+                                        "fabric" -> Color(0x55A855F7)
+                                        "forge" -> Color(0x55FF9800)
+                                        else -> Color(0x5500FF88)
+                                    }
+                                )
+                                .padding(horizontal = 5.dp, vertical = 1.5.dp)
                         ) {
                             Text(
-                                text = if (version == null) "Latest Release" else version.getVersionName(),
-                                color = Color.White,
+                                text = loaderName.uppercase(),
+                                color = when (loaderName.lowercase()) {
+                                    "fabric" -> Color(0xFFD8B4FE)
+                                    "forge" -> Color(0xFFFFB74D)
+                                    else -> Color(0xFF00FF88)
+                                },
                                 fontFamily = MinecraftFontFamily,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                fontSize = 8.5.sp
                             )
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(3.dp))
-                                    .background(
-                                        when (loaderName.lowercase()) {
-                                            "fabric" -> Color(0x44A855F7)
-                                            "forge" -> Color(0x44FF9800)
-                                            else -> Color(0x4400FF88)
-                                        }
-                                    )
-                                    .padding(horizontal = 4.dp, vertical = 1.dp)
-                            ) {
-                                Text(
-                                    text = loaderName.uppercase(),
-                                    color = when (loaderName.lowercase()) {
-                                        "fabric" -> Color(0xFFD8B4FE)
-                                        "forge" -> Color(0xFFFFB74D)
-                                        else -> Color(0xFF00FF88)
-                                    },
-                                    fontFamily = MinecraftFontFamily,
-                                    fontSize = 8.5.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
                         }
-                        val mcVer = version?.getVersionInfo()?.minecraftVersion
-                        val verDisplay = if (mcVer != null && version != null) {
-                            "Minecraft Java $mcVer"
-                        } else {
-                            latestReleaseVersion
-                        }
+
                         Text(
-                            text = verDisplay,
+                            text = "Java ",
                             color = Color(0xFFA0B4C8),
                             fontFamily = MinecraftFontFamily,
-                            fontSize = 11.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            fontSize = 10.sp
                         )
                     }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Icon(
-                        painter = painterResource(R.drawable.ic_keyboard_arrow_down),
-                        contentDescription = null,
-                        tint = Color(0xFF00F0FF),
-                        modifier = Modifier.size(18.dp)
-                    )
+                }
+
+                // Switch Version Pill Button
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color(0xFF162032))
+                        .border(BorderStroke(1.dp, Color(0x6600F0FF)), RoundedCornerShape(8.dp))
+                        .clickable(onClick = {
+                            com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                            onVersionClick()
+                        })
+                        .padding(horizontal = 9.dp, vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "SWITCH",
+                            color = Color(0xFF00F0FF),
+                            fontFamily = MinecraftFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 9.5.sp
+                        )
+                        Icon(
+                            painter = painterResource(R.drawable.ic_keyboard_arrow_down),
+                            contentDescription = null,
+                            tint = Color(0xFF00F0FF),
+                            modifier = Modifier.size(13.dp)
+                        )
+                    }
+                }
+            }
+
+            // Integrated 4-Metric Real-Time Telemetry Bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0x990A0E18))
+                    .border(BorderStroke(1.dp, Color(0x2238455A)), RoundedCornerShape(8.dp))
+                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Metric 1: Renderer
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                    Text(text = "⚡", fontSize = 9.sp)
+                    Text(text = "VULKAN ZINK", color = Color(0xFF00FF88), fontFamily = MinecraftFontFamily, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                }
+                // Metric 2: Memory
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                    Text(text = "🧠", fontSize = 9.sp)
+                    Text(text = "4.0 GB ALLOC", color = Color(0xFF00F0FF), fontFamily = MinecraftFontFamily, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                }
+                // Metric 3: Controls
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                    Text(text = "🎮", fontSize = 9.sp)
+                    Text(text = "BEDROCK HUD", color = Color(0xFFA855F7), fontFamily = MinecraftFontFamily, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                }
+                // Metric 4: Runtime
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                    Text(text = "☕", fontSize = 9.sp)
+                    Text(text = "JDK 21", color = Color(0xFFFFB300), fontFamily = MinecraftFontFamily, fontSize = 8.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -1211,48 +1299,54 @@ private fun HeroMinecraftCard(
 }
 
 /**
- * Play Action Row directly below Hero Card:
- * Features high-impact glowing cyber Launch capsule with pulsing aura
+ * VRC Launch Ignition Console:
+ * High-energy glowing cyber launch bar with animated sweeping perimeter aura,
+ * dynamic launch states, and docked quick utility shortcuts.
  */
 @Composable
-private fun PlayActionRow(
+private fun VrcLaunchIgnitionConsole(
     account: Account?,
     isLaunching: Boolean,
-    onPlayClick: () -> Unit
+    onPlayClick: () -> Unit,
+    onConfigureControls: () -> Unit,
+    onConfigureGraphics: () -> Unit,
+    onOpenFiles: () -> Unit
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "launch_glow")
-    val glowAlpha by infiniteTransition.animateFloat(
+    val infiniteTransition = rememberInfiniteTransition(label = "ignition_glow")
+    val pulseAlpha by infiniteTransition.animateFloat(
         initialValue = 0.45f,
-        targetValue = 0.95f,
+        targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1200, easing = FastOutSlowInEasing),
+            animation = tween(1000, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "launch_pulse"
+        label = "ignition_pulse"
     )
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 6.dp),
-        contentAlignment = Alignment.Center
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
+        // Main Ignition Button
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp)
+                .height(60.dp)
                 .clip(RoundedCornerShape(14.dp))
                 .background(
                     Brush.horizontalGradient(
                         listOf(
-                            Color(0xFF0072FF),
+                            Color(0xFF0052D4),
+                            Color(0xFF4364F7),
                             Color(0xFF00C6FF),
                             Color(0xFF00E676)
                         )
                     )
                 )
                 .border(
-                    BorderStroke(2.dp, Color(0xFF00FF88).copy(alpha = glowAlpha)),
+                    BorderStroke(2.dp, Color(0xFF00FF88).copy(alpha = pulseAlpha)),
                     RoundedCornerShape(14.dp)
                 )
                 .clickable {
@@ -1264,11 +1358,11 @@ private fun PlayActionRow(
             if (isLaunching) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(10.dp)
+                            .size(12.dp)
                             .clip(CircleShape)
                             .background(Color.White)
                     )
@@ -1282,27 +1376,35 @@ private fun PlayActionRow(
                     )
                 }
             } else {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    // Play Glyph Pill
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp)
+                            .clip(CircleShape)
+                            .background(Color(0x33FFFFFF))
+                            .border(BorderStroke(1.5.dp, Color.White), CircleShape),
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_play_arrow_filled),
                             contentDescription = null,
                             tint = Color.White,
-                            modifier = Modifier.size(22.dp)
+                            modifier = Modifier.size(20.dp)
                         )
+                    }
+
+                    Column(verticalArrangement = Arrangement.Center) {
                         Text(
-                            text = "LAUNCH VRC",
+                            text = "LAUNCH MINECRAFT",
                             color = Color.White,
                             fontFamily = MinecraftFontFamily,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 19.sp,
-                            letterSpacing = 1.5.sp,
+                            fontSize = 18.sp,
+                            letterSpacing = 1.2.sp,
                             style = TextStyle(
                                 shadow = Shadow(
                                     color = Color(0x99000000),
@@ -1311,199 +1413,121 @@ private fun PlayActionRow(
                                 )
                             )
                         )
+                        Text(
+                            text = "READY TO PLAY • VULKAN ACCELERATED",
+                            color = Color(0xEEFFFFFF),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 8.5.sp,
+                            letterSpacing = 0.5.sp
+                        )
                     }
-                    Text(
-                        text = "ENGINE READY • VULKAN HARDWARE ACCELERATED",
-                        color = Color(0xDDFFFFFF),
-                        fontFamily = MinecraftFontFamily,
-                        fontSize = 9.sp,
-                        letterSpacing = 0.5.sp
-                    )
                 }
             }
         }
-    }
-}
 
-/**
- * VRC Quick Control Deck:
- * 3 Interactive Cyber telemetry and control cards directly accessible from the home screen
- */
-@Composable
-private fun VrcControlDeck(
-    onConfigureControls: () -> Unit,
-    onConfigureGraphics: () -> Unit,
-    onOpenMultiplayer: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // Card 1: Bedrock Touch Controls
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .height(68.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xE6101624))
-                .border(BorderStroke(1.dp, Color(0x3300F0FF)), RoundedCornerShape(12.dp))
-                .clickable {
-                    com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
-                    onConfigureControls()
-                }
-                .padding(8.dp)
+        // Sub-Action Utility Dock
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
+            // Button 1: Touch Layout Editor
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(34.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xDD101626))
+                    .border(BorderStroke(1.dp, Color(0x3300F0FF)), RoundedCornerShape(8.dp))
+                    .clickable {
+                        com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                        onConfigureControls()
+                    },
+                contentAlignment = Alignment.Center
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_videogame_asset_outlined),
                         contentDescription = null,
                         tint = Color(0xFF00F0FF),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF00F0FF))
-                    )
-                }
-                Column {
-                    Text(
-                        text = "TOUCH INPUT",
-                        color = Color(0xFFA0B4C8),
-                        fontFamily = MinecraftFontFamily,
-                        fontSize = 8.5.sp,
-                        fontWeight = FontWeight.Bold
+                        modifier = Modifier.size(13.dp)
                     )
                     Text(
-                        text = "Bedrock D-Pad",
-                        color = Color.White,
+                        text = "CONTROLS",
+                        color = Color(0xFF00F0FF),
                         fontFamily = MinecraftFontFamily,
-                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 1
+                        fontSize = 9.sp
                     )
                 }
             }
-        }
 
-        // Card 2: Vulkan / GLES Graphics Acceleration
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .height(68.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xE6101624))
-                .border(BorderStroke(1.dp, Color(0x3300FF88)), RoundedCornerShape(12.dp))
-                .clickable {
-                    com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
-                    onConfigureGraphics()
-                }
-                .padding(8.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
+            // Button 2: GPU Renderer Setup
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(34.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xDD101626))
+                    .border(BorderStroke(1.dp, Color(0x3300FF88)), RoundedCornerShape(8.dp))
+                    .clickable {
+                        com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                        onConfigureGraphics()
+                    },
+                contentAlignment = Alignment.Center
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_settings_filled),
                         contentDescription = null,
                         tint = Color(0xFF00FF88),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF00FF88))
-                    )
-                }
-                Column {
-                    Text(
-                        text = "GPU RENDERER",
-                        color = Color(0xFFA0B4C8),
-                        fontFamily = MinecraftFontFamily,
-                        fontSize = 8.5.sp,
-                        fontWeight = FontWeight.Bold
+                        modifier = Modifier.size(13.dp)
                     )
                     Text(
-                        text = "Vulkan Turbo",
-                        color = Color.White,
+                        text = "RENDERER",
+                        color = Color(0xFF00FF88),
                         fontFamily = MinecraftFontFamily,
-                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 1
+                        fontSize = 9.sp
                     )
                 }
             }
-        }
 
-        // Card 3: Multiplayer P2P
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .height(68.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xE6101624))
-                .border(BorderStroke(1.dp, Color(0x33A855F7)), RoundedCornerShape(12.dp))
-                .clickable {
-                    com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
-                    onOpenMultiplayer()
-                }
-                .padding(8.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
+            // Button 3: Files Explorer
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(34.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xDD101626))
+                    .border(BorderStroke(1.dp, Color(0x33A855F7)), RoundedCornerShape(8.dp))
+                    .clickable {
+                        com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                        onOpenFiles()
+                    },
+                contentAlignment = Alignment.Center
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_dns_outlined),
+                        painter = painterResource(R.drawable.ic_folder_filled),
                         contentDescription = null,
                         tint = Color(0xFFA855F7),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFFA855F7))
-                    )
-                }
-                Column {
-                    Text(
-                        text = "ONLINE HUB",
-                        color = Color(0xFFA0B4C8),
-                        fontFamily = MinecraftFontFamily,
-                        fontSize = 8.5.sp,
-                        fontWeight = FontWeight.Bold
+                        modifier = Modifier.size(13.dp)
                     )
                     Text(
-                        text = "Servers & LAN",
-                        color = Color.White,
+                        text = "GAME FILES",
+                        color = Color(0xFFA855F7),
                         fontFamily = MinecraftFontFamily,
-                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 1
+                        fontSize = 9.sp
                     )
                 }
             }
@@ -1512,11 +1536,262 @@ private fun VrcControlDeck(
 }
 
 /**
- * Installed Versions Section:
- * Displays all installations as distinct cyberpunk glass cards with active neon indicator.
+ * VRC Cyber Bento Grid:
+ * 2x2 modular matrix of interactive hardware & gaming tiles.
  */
 @Composable
-private fun InstalledVersionsSection(
+private fun VrcCyberBentoGrid(
+    onConfigureControls: () -> Unit,
+    onConfigureGraphics: () -> Unit,
+    onOpenMultiplayer: () -> Unit,
+    onOpenModsHub: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        // Row 1: Touch Layout & Vulkan Engine
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Tile 1: Touch HUD
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(76.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xDD0E1422))
+                    .border(BorderStroke(1.dp, Color(0x3300F0FF)), RoundedCornerShape(12.dp))
+                    .clickable {
+                        com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                        onConfigureControls()
+                    }
+                    .padding(10.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "TOUCH HUD",
+                            color = Color(0xFF00F0FF),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF00F0FF))
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "Bedrock D-Pad",
+                            color = Color.White,
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Tap to customize keys",
+                            color = Color(0xFF8E9BAE),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 8.sp
+                        )
+                    }
+                }
+            }
+
+            // Tile 2: Graphics Core
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(76.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xDD0E1422))
+                    .border(BorderStroke(1.dp, Color(0x3300FF88)), RoundedCornerShape(12.dp))
+                    .clickable {
+                        com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                        onConfigureGraphics()
+                    }
+                    .padding(10.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "GPU CORE",
+                            color = Color(0xFF00FF88),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF00FF88))
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "Vulkan Zink",
+                            color = Color.White,
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Hardware GLES3 active",
+                            color = Color(0xFF8E9BAE),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 8.sp
+                        )
+                    }
+                }
+            }
+        }
+
+        // Row 2: Online Hub & Mods Store
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Tile 3: Online Hub
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(76.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xDD0E1422))
+                    .border(BorderStroke(1.dp, Color(0x33A855F7)), RoundedCornerShape(12.dp))
+                    .clickable {
+                        com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                        onOpenMultiplayer()
+                    }
+                    .padding(10.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "ONLINE HUB",
+                            color = Color(0xFFA855F7),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFA855F7))
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "Servers & LAN",
+                            color = Color.White,
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Direct join & P2P",
+                            color = Color(0xFF8E9BAE),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 8.sp
+                        )
+                    }
+                }
+            }
+
+            // Tile 4: Mods Store
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(76.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xDD0E1422))
+                    .border(BorderStroke(1.dp, Color(0x33FFB300)), RoundedCornerShape(12.dp))
+                    .clickable {
+                        com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                        onOpenModsHub()
+                    }
+                    .padding(10.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "MODS STORE",
+                            color = Color(0xFFFFB300),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFFFB300))
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "Modrinth Hub",
+                            color = Color.White,
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Shaders & Addons",
+                            color = Color(0xFF8E9BAE),
+                            fontFamily = MinecraftFontFamily,
+                            fontSize = 8.sp
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * VRC Holographic Cartridge Deck:
+ * Horizontal scrolling carousel of high-tech game cartridges.
+ */
+@Composable
+private fun VrcHoloCartridgeDeck(
     allVersions: List<Version>,
     currentVersion: Version?,
     onSelectVersion: (Version) -> Unit,
@@ -1526,7 +1801,7 @@ private fun InstalledVersionsSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -1534,15 +1809,15 @@ private fun InstalledVersionsSection(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "YOUR INSTALLATIONS",
+                text = "DEPLOYED PROFILES",
                 color = Color.White,
                 fontFamily = MinecraftFontFamily,
                 fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                maxLines = 1,
-                softWrap = false
+                fontSize = 13.sp,
+                letterSpacing = 0.5.sp
             )
-            Row(
+
+            Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.dp))
                     .background(Color(0x3300FF88))
@@ -1551,18 +1826,15 @@ private fun InstalledVersionsSection(
                         com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
                         onAddNewClick()
                     })
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(horizontal = 8.dp, vertical = 3.5.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "+ NEW INSTALLATION",
+                    text = "+ NEW PROFILE",
                     color = Color(0xFF00FF88),
                     fontFamily = MinecraftFontFamily,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 11.sp,
-                    maxLines = 1,
-                    softWrap = false
+                    fontSize = 9.sp
                 )
             }
         }
@@ -1573,191 +1845,178 @@ private fun InstalledVersionsSection(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(80.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xE6101624))
+                    .background(Color(0x990E1422))
                     .border(BorderStroke(1.dp, Color(0x3338455A)), RoundedCornerShape(12.dp))
                     .clickable(onClick = {
                         com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
                         onAddNewClick()
-                    })
-                    .padding(16.dp),
+                    }),
                 contentAlignment = Alignment.Center
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "No custom installations configured",
-                        color = Color(0xFFA0B4C8),
-                        fontFamily = MinecraftFontFamily,
-                        fontSize = 12.sp
-                    )
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Brush.horizontalGradient(listOf(Color(0xFF0072FF), Color(0xFF00E676))))
-                            .clickable {
-                                com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
-                                onAddNewClick()
-                            }
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        Text(
-                            text = "+ CREATE INSTALLATION",
-                            color = Color.White,
-                            fontFamily = MinecraftFontFamily,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 11.sp
-                        )
-                    }
-                }
+                Text(
+                    text = "+ CREATE YOUR FIRST MINECRAFT PROFILE",
+                    color = Color(0xFF00F0FF),
+                    fontFamily = MinecraftFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.sp
+                )
             }
         } else {
-            allVersions.forEach { ver ->
-                val isSelected = ver.getVersionName() == currentVersion?.getVersionName()
-                val iconFile = remember(ver) { ver.getVersionIconFile() }
-                val hasCustomIcon = iconFile.exists()
-                val fallbackIcon = remember(ver) {
-                    com.movtery.zalithlauncher.ui.screens.content.elements.getLoaderIconRes(ver.getVersionInfo()?.loaderInfo?.loader)
-                }
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(allVersions) { ver ->
+                    val isSelected = ver.getVersionName() == currentVersion?.getVersionName()
+                    val iconFile = remember(ver) { ver.getVersionIconFile() }
+                    val hasCustomIcon = iconFile.exists()
+                    val fallbackIcon = remember(ver) {
+                        com.movtery.zalithlauncher.ui.screens.content.elements.getLoaderIconRes(ver.getVersionInfo()?.loaderInfo?.loader)
+                    }
+                    val loaderName = ver.getVersionInfo()?.loaderInfo?.loader?.displayName ?: "Vanilla"
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(if (isSelected) Color(0xE6122028) else Color(0xCC101522))
-                        .border(
-                            BorderStroke(
-                                1.5.dp,
-                                if (isSelected) Color(0xFF00FF88) else Color(0x33445566)
-                            ),
-                            RoundedCornerShape(12.dp)
-                        )
-                        .clickable {
-                            com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
-                            onSelectVersion(ver)
-                        }
-                ) {
-                    Row(
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Respective Installation Block/Icon
-                        Box(
-                            modifier = Modifier
-                                .size(50.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF181F2E))
-                                .border(
-                                    BorderStroke(
-                                        1.dp,
-                                        if (isSelected) Color(0xFF00FF88) else Color(0xFF38455A)
-                                    ),
-                                    RoundedCornerShape(8.dp)
+                            .width(170.dp)
+                            .height(96.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(if (isSelected) Color(0xE6111C2B) else Color(0xCC0D121E))
+                            .border(
+                                BorderStroke(
+                                    1.5.dp,
+                                    if (isSelected) Color(0xFF00FF88) else Color(0x3338455A)
                                 ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (hasCustomIcon) {
-                                AsyncImage(
-                                    model = iconFile,
-                                    contentDescription = ver.getVersionName(),
-                                    modifier = Modifier.size(40.dp),
-                                    contentScale = ContentScale.Fit
-                                )
-                            } else {
-                                Image(
-                                    painter = painterResource(fallbackIcon),
-                                    contentDescription = ver.getVersionName(),
-                                    modifier = Modifier.size(40.dp),
-                                    contentScale = ContentScale.Fit
-                                )
+                                RoundedCornerShape(12.dp)
+                            )
+                            .clickable {
+                                com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                                onSelectVersion(ver)
                             }
-                        }
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
+                            .padding(10.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
                             Row(
+                                modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color(0xFF162032)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (hasCustomIcon) {
+                                        AsyncImage(
+                                            model = iconFile,
+                                            contentDescription = ver.getVersionName(),
+                                            modifier = Modifier.size(24.dp),
+                                            contentScale = ContentScale.Fit
+                                        )
+                                    } else {
+                                        Image(
+                                            painter = painterResource(fallbackIcon),
+                                            contentDescription = ver.getVersionName(),
+                                            modifier = Modifier.size(24.dp),
+                                            contentScale = ContentScale.Fit
+                                        )
+                                    }
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(3.dp))
+                                        .background(if (isSelected) Color(0x3300FF88) else Color(0x22FFFFFF))
+                                        .padding(horizontal = 4.dp, vertical = 1.dp)
+                                ) {
+                                    Text(
+                                        text = if (isSelected) "ACTIVE" else loaderName.uppercase(),
+                                        color = if (isSelected) Color(0xFF00FF88) else Color(0xFFA0B4C8),
+                                        fontFamily = MinecraftFontFamily,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 7.5.sp
+                                    )
+                                }
+                            }
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
                                     text = ver.getVersionName(),
                                     color = Color.White,
                                     fontFamily = MinecraftFontFamily,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 13.5.sp,
+                                    fontSize = 12.sp,
                                     maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.weight(1f)
                                 )
-                                if (isSelected) {
-                                    Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(3.dp))
-                                            .background(Color(0x3300FF88))
-                                            .padding(horizontal = 4.dp, vertical = 1.dp)
-                                    ) {
-                                        Text(
-                                            text = "ACTIVE",
-                                            color = Color(0xFF00FF88),
-                                            fontFamily = MinecraftFontFamily,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 8.5.sp
-                                        )
-                                    }
+
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(5.dp))
+                                        .background(Color(0xFF0072FF))
+                                        .clickable {
+                                            com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                                            onPlayVersion(ver)
+                                        }
+                                        .padding(horizontal = 6.dp, vertical = 3.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "PLAY",
+                                        color = Color.White,
+                                        fontFamily = MinecraftFontFamily,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 8.sp
+                                    )
                                 }
                             }
-                            Spacer(modifier = Modifier.height(2.dp))
-                            val mcVer = ver.getVersionInfo()?.minecraftVersion
-                            val loaderName = ver.getVersionInfo()?.loaderInfo?.loader?.displayName ?: "Vanilla"
-                            val hasRealMc = mcVer != null && (mcVer != ver.getVersionName() || mcVer.contains("."))
-                            val subtitleText = if (hasRealMc) {
-                                "$loaderName • $mcVer"
-                            } else {
-                                loaderName
-                            }
-                            Text(
-                                text = subtitleText,
-                                color = Color(0xFFA0B4C8),
-                                fontFamily = MinecraftFontFamily,
-                                fontSize = 11.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
                         }
+                    }
+                }
 
-                        Box(
-                            modifier = Modifier
-                                .width(68.dp)
-                                .height(34.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(
-                                    if (isSelected) Brush.horizontalGradient(listOf(Color(0xFF0072FF), Color(0xFF00E676)))
-                                    else Brush.horizontalGradient(listOf(Color(0xFF1E2838), Color(0xFF161E2C)))
-                                
-                                )
-                                .border(
-                                    BorderStroke(1.dp, if (isSelected) Color(0xFF00FF88) else Color(0xFF38455A)),
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .clickable {
-                                    com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
-                                    onPlayVersion(ver)
-                                },
-                            contentAlignment = Alignment.Center
+                // Extra item: + Add installation card at end
+                item {
+                    Box(
+                        modifier = Modifier
+                            .width(130.dp)
+                            .height(96.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0x660D121E))
+                            .border(BorderStroke(1.dp, Color(0x4400F0FF)), RoundedCornerShape(12.dp))
+                            .clickable {
+                                com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
+                                onAddNewClick()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
-                                text = "PLAY",
-                                color = Color.White,
+                                text = "+",
+                                color = Color(0xFF00F0FF),
                                 fontFamily = MinecraftFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 11.5.sp,
-                                maxLines = 1,
-                                softWrap = false
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "NEW INSTANCE",
+                                color = Color(0xFFA0B4C8),
+                                fontFamily = MinecraftFontFamily,
+                                fontSize = 8.5.sp,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
