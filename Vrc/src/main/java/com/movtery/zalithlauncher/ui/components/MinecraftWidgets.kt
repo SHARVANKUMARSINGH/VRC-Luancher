@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -399,7 +400,7 @@ fun VrcGlassCard(
  */
 @Composable
 fun MinecraftPCBottomNavBar(
-    selectedItem: Int, // 0: News, 1: Versions, 2: Mods, 3: Profile
+    selectedItem: Int, // 0: News, 1: Play, 2: Versions, 3: Mods, 4: Profile
     onItemSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
     playerHeadContent: (@Composable () -> Unit)? = null
@@ -407,31 +408,33 @@ fun MinecraftPCBottomNavBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 6.dp)
-            .clip(RoundedCornerShape(26.dp))
-            .background(Color(0xE60E121B))
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color(0xE60A0D15))
             .border(
                 BorderStroke(
                     1.5.dp,
                     Brush.horizontalGradient(
                         listOf(
-                            Color(0x4400F0FF),
-                            Color(0x228A2BE2),
-                            Color(0x4400FF88)
+                            Color(0x3300FF88),
+                            Color(0x5500F0FF),
+                            Color(0x33A855F7),
+                            Color(0x33FFB300),
+                            Color(0x33FF4081)
                         )
                     )
                 ),
-                RoundedCornerShape(26.dp)
+                RoundedCornerShape(24.dp)
             )
-            .padding(horizontal = 6.dp, vertical = 4.dp),
+            .padding(horizontal = 4.dp, vertical = 3.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp),
+                .height(54.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
         ) {
             // 0: News
             MinecraftPCNavItem(
@@ -442,7 +445,7 @@ fun MinecraftPCBottomNavBar(
                     Image(
                         painter = painterResource(R.drawable.ic_mc_pc_news),
                         contentDescription = "News",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(22.dp)
                     )
                 },
                 label = "News",
@@ -451,7 +454,7 @@ fun MinecraftPCBottomNavBar(
                 onClick = { onItemSelected(0) }
             )
 
-            // 1: Play / Versions
+            // 1: Play
             MinecraftPCNavItem(
                 modifier = Modifier
                     .weight(1f)
@@ -460,7 +463,7 @@ fun MinecraftPCBottomNavBar(
                     Image(
                         painter = painterResource(R.drawable.ic_mc_pc_versions),
                         contentDescription = "Play",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(22.dp)
                     )
                 },
                 label = "Play",
@@ -469,7 +472,26 @@ fun MinecraftPCBottomNavBar(
                 onClick = { onItemSelected(1) }
             )
 
-            // 2: Mods
+            // 2: Versions
+            MinecraftPCNavItem(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                icon = { isSel ->
+                    Icon(
+                        painter = painterResource(R.drawable.ic_installations_cube),
+                        contentDescription = "Versions",
+                        tint = if (isSel) Color(0xFFA855F7) else Color(0xFF8E9BAE),
+                        modifier = Modifier.size(22.dp)
+                    )
+                },
+                label = "Versions",
+                isSelected = selectedItem == 2,
+                accentColor = Color(0xFFA855F7),
+                onClick = { onItemSelected(2) }
+            )
+
+            // 3: Mods
             MinecraftPCNavItem(
                 modifier = Modifier
                     .weight(1f)
@@ -478,16 +500,16 @@ fun MinecraftPCBottomNavBar(
                     Image(
                         painter = painterResource(R.drawable.ic_mc_pc_mods),
                         contentDescription = "Mods",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(22.dp)
                     )
                 },
                 label = "Mods",
-                isSelected = selectedItem == 2,
+                isSelected = selectedItem == 3,
                 accentColor = Color(0xFFFFB300),
-                onClick = { onItemSelected(2) }
+                onClick = { onItemSelected(3) }
             )
 
-            // 3: Profile
+            // 4: Profile
             MinecraftPCNavItem(
                 modifier = Modifier
                     .weight(1f)
@@ -497,14 +519,14 @@ fun MinecraftPCBottomNavBar(
                         painter = painterResource(R.drawable.ic_mc_pc_profile),
                         contentDescription = "Profile",
                         modifier = Modifier
-                            .size(24.dp)
+                            .size(22.dp)
                             .clip(RoundedCornerShape(4.dp))
                     )
                 },
                 label = "Profile",
-                isSelected = selectedItem == 3,
-                accentColor = Color(0xFFA855F7),
-                onClick = { onItemSelected(3) }
+                isSelected = selectedItem == 4,
+                accentColor = Color(0xFFFF4081),
+                onClick = { onItemSelected(4) }
             )
         }
     }
@@ -556,9 +578,11 @@ private fun MinecraftPCNavItem(
             text = label,
             color = textColor,
             fontFamily = MinecraftFontFamily,
-            fontSize = 11.5.sp,
+            fontSize = 10.sp,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            softWrap = false
         )
         if (isSelected) {
             Spacer(modifier = Modifier.height(2.dp))

@@ -343,13 +343,13 @@ class MainActivity : BaseAppCompatActivity() {
                             errorViewModel.showError(it)
                         },
                         toAccountManageScreen = { menu ->
-                            com.movtery.zalithlauncher.ui.screens.content.LauncherNavState.selectedBottomNav = 3
+                            com.movtery.zalithlauncher.ui.screens.content.LauncherNavState.selectedBottomNav = 4
                             com.movtery.zalithlauncher.ui.screens.content.LauncherNavState.activeTab = -1
                             screenBackStackModel.mainScreen.clearWith(NormalNavKey.LauncherMain)
                         },
                         toVersionManageScreen = {
-                            com.movtery.zalithlauncher.ui.screens.content.LauncherNavState.selectedBottomNav = 1
-                            com.movtery.zalithlauncher.ui.screens.content.LauncherNavState.activeTab = 0
+                            com.movtery.zalithlauncher.ui.screens.content.LauncherNavState.selectedBottomNav = 2
+                            com.movtery.zalithlauncher.ui.screens.content.LauncherNavState.activeTab = -1
                             screenBackStackModel.mainScreen.clearWith(NormalNavKey.LauncherMain)
                         },
                         navigateToWeb = { url ->

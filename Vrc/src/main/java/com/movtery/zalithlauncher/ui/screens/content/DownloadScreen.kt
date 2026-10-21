@@ -219,7 +219,7 @@ fun DownloadScreen(
 
             // Always show Minecraft PC Bottom Navigation Bar
             com.movtery.zalithlauncher.ui.components.MinecraftPCBottomNavBar(
-                selectedItem = 2,
+                selectedItem = 3,
                 onItemSelected = { index ->
                     com.movtery.zalithlauncher.ui.screens.content.LauncherNavState.selectedBottomNav = index
                     backScreenViewModel.mainScreen.navigateTo(NormalNavKey.LauncherMain)

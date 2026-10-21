@@ -164,7 +164,7 @@ fun LauncherScreen(
         val context = LocalContext.current
 
         val toAccountManageScreen = {
-            LauncherNavState.selectedBottomNav = 3 // Switch directly to custom Profile tab
+            LauncherNavState.selectedBottomNav = 4 // Switch directly to custom Profile tab
             LauncherNavState.activeTab = -1
         }
 
@@ -214,60 +214,23 @@ fun LauncherScreen(
                     }
                 )
 
-                // Sub-navigation Tabs: Installations | Skins | Patch Notes
-                // (Only visible on Versions/Home tab)
-                if (selectedBottomNav == 1) {
-                    SubNavigationTabs(
-                        activeTab = activeTab,
-                        onTabSelected = { tabIndex ->
-                            LauncherNavState.activeTab = if (LauncherNavState.activeTab == tabIndex) -1 else tabIndex
-                        }
-                    )
-                }
-
-                // Main Content Switching
+                // Main Content Switching (Unified 5-Tab Command Center: News | Play | Versions | Mods | Profile)
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
                 ) {
-                    when {
-                        // Bottom Nav: News
-                        selectedBottomNav == 0 -> {
+                    when (selectedBottomNav) {
+                        // 0: News Screen
+                        0 -> {
                             MinecraftNewsScreen(
                                 onOpenLink = onOpenLink,
                                 onBackClick = { LauncherNavState.selectedBottomNav = 1 }
                             )
                         }
-                        // Bottom Nav: Mods
-                        selectedBottomNav == 2 -> {
-                            MinecraftModsScreen(
-                                currentVersion = currentVersion,
-                                backStackViewModel = backStackViewModel,
-                                navigateToVersions = navigateToVersions,
-                                onBackClick = { LauncherNavState.selectedBottomNav = 1 }
-                            )
-                        }
-                        // Bottom Nav: Profile
-                        selectedBottomNav == 3 -> {
-                            MinecraftProfileScreen(
-                                account = account,
-                                backStackViewModel = backStackViewModel,
-                                onBackClick = { LauncherNavState.selectedBottomNav = 1 }
-                            )
-                        }
-                        // Bottom Nav: Versions (Home)
-                        else -> {
+                        // 1: Play / Command Center Screen
+                        1 -> {
                             when (activeTab) {
-                                0 -> {
-                                    // Installations Screen (1:1 replica of Installations.png)
-                                    MinecraftInstallationsScreen(
-                                        currentVersion = currentVersion,
-                                        backStackViewModel = backStackViewModel,
-                                        onLaunchGame = onLaunchGame,
-                                        onBackClick = { LauncherNavState.activeTab = -1 }
-                                    )
-                                }
                                 1 -> {
                                     // Skins Screen
                                     MinecraftSkinsScreen(
@@ -356,7 +319,7 @@ fun LauncherScreen(
                                                     },
                                                     onClick = {
                                                         showVersionMenu = false
-                                                        LauncherNavState.activeTab = 0
+                                                        LauncherNavState.selectedBottomNav = 2
                                                     }
                                                 )
                                             }
@@ -374,7 +337,7 @@ fun LauncherScreen(
                                                 }
                                                 if (account == null) {
                                                     Toast.makeText(context, "Please create an account first!", Toast.LENGTH_SHORT).show()
-                                                    LauncherNavState.selectedBottomNav = 3
+                                                    LauncherNavState.selectedBottomNav = 4
                                                     LauncherNavState.activeTab = -1
                                                     return@PlayActionRow
                                                 }
@@ -386,7 +349,7 @@ fun LauncherScreen(
                                                 }
                                                 if (!hasDownloadedVersion) {
                                                     Toast.makeText(context, "Please create an installation first!", Toast.LENGTH_SHORT).show()
-                                                    LauncherNavState.activeTab = 0
+                                                    LauncherNavState.selectedBottomNav = 2
                                                     return@PlayActionRow
                                                 }
                                                 val targetVersion = currentVersion?.takeIf { ver ->
@@ -402,7 +365,7 @@ fun LauncherScreen(
                                                 }
                                                 if (targetVersion == null) {
                                                     Toast.makeText(context, "Please create an installation first!", Toast.LENGTH_SHORT).show()
-                                                    LauncherNavState.activeTab = 0
+                                                    LauncherNavState.selectedBottomNav = 2
                                                     return@PlayActionRow
                                                 }
                                                 onLaunchGame(targetVersion)
@@ -440,7 +403,7 @@ fun LauncherScreen(
                                                 }
                                                 if (account == null) {
                                                     Toast.makeText(context, "Please create an account first!", Toast.LENGTH_SHORT).show()
-                                                    LauncherNavState.selectedBottomNav = 3
+                                                    LauncherNavState.selectedBottomNav = 4
                                                     LauncherNavState.activeTab = -1
                                                     return@InstalledVersionsSection
                                                 }
@@ -450,19 +413,48 @@ fun LauncherScreen(
                                                 val isDownloaded = (clientJar.exists() && clientJar.length() > 0) || (inheritedJar != null && inheritedJar.exists() && inheritedJar.length() > 0)
                                                 if (!isDownloaded) {
                                                     Toast.makeText(context, "Please create an installation first!", Toast.LENGTH_SHORT).show()
-                                                    LauncherNavState.activeTab = 0
+                                                    LauncherNavState.selectedBottomNav = 2
                                                     return@InstalledVersionsSection
                                                 }
                                                 VersionsManager.saveVersion(ver)
                                                 onLaunchGame(ver)
                                             },
                                             onAddNewClick = {
-                                                LauncherNavState.activeTab = 0
+                                                LauncherNavState.selectedBottomNav = 2
                                             }
                                         )
                                     }
                                 }
                             }
+                        }
+                        // 2: Versions Screen
+                        2 -> {
+                            MinecraftInstallationsScreen(
+                                currentVersion = currentVersion,
+                                backStackViewModel = backStackViewModel,
+                                onLaunchGame = onLaunchGame,
+                                onBackClick = { LauncherNavState.selectedBottomNav = 1 }
+                            )
+                        }
+                        // 3: Mods Screen
+                        3 -> {
+                            MinecraftModsScreen(
+                                currentVersion = currentVersion,
+                                backStackViewModel = backStackViewModel,
+                                navigateToVersions = navigateToVersions,
+                                onBackClick = { LauncherNavState.selectedBottomNav = 1 }
+                            )
+                        }
+                        // 4: Profile Screen
+                        4 -> {
+                            MinecraftProfileScreen(
+                                account = account,
+                                backStackViewModel = backStackViewModel,
+                                onBackClick = { LauncherNavState.selectedBottomNav = 1 }
+                            )
+                        }
+                        else -> {
+                            // Default fallback
                         }
                     }
                 }
@@ -478,8 +470,8 @@ fun LauncherScreen(
                     }
                 )
 
-                // 1:1 Replica Minecraft PC Mobile Launcher Bottom Navigation Bar
-                // Options: News | Versions | Mods | Profile
+                // 1:1 Unified Command Center Bottom Navigation Bar
+                // Options: News | Play | Versions | Mods | Profile
                 MinecraftPCBottomNavBar(
                     selectedItem = selectedBottomNav,
                     onItemSelected = { index ->
@@ -993,83 +985,6 @@ private fun TopAccountHeader(
                 )
             }
         )
-    }
-}
-
-/**
- * Sub-Navigation Tabs: Play | Installations | Skins | Patch Notes
- */
-@Composable
-private fun SubNavigationTabs(
-    activeTab: Int,
-    onTabSelected: (Int) -> Unit
-) {
-    // -1: Play, 0: Installations, 1: Skins, 2: Patch Notes
-    val tabs = listOf(
-        Pair("Play", -1),
-        Pair("Installations", 0),
-        Pair("Skins", 1),
-        Pair("Patch Notes", 2)
-    )
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xE60A0D15))
-            .border(BorderStroke(1.dp, Color(0x1A00F0FF)))
-            .padding(horizontal = 8.dp, vertical = 6.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        tabs.forEach { (title, tabIndex) ->
-            val isSelected = activeTab == tabIndex
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(
-                        if (isSelected) Brush.horizontalGradient(
-                            listOf(Color(0x3300F0FF), Color(0x2200FF88))
-                        ) else Brush.horizontalGradient(
-                            listOf(Color.Transparent, Color.Transparent)
-                        )
-                    )
-                    .border(
-                        BorderStroke(
-                            1.dp,
-                            if (isSelected) Color(0x7700F0FF) else Color.Transparent
-                        ),
-                        RoundedCornerShape(12.dp)
-                    )
-                    .clickable {
-                        com.movtery.zalithlauncher.ui.sound.MinecraftSoundHelper.playClickSound()
-                        onTabSelected(tabIndex)
-                    }
-                    .padding(horizontal = 8.dp, vertical = 5.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = title,
-                        color = if (isSelected) Color.White else Color(0xFF8E9BAE),
-                        fontFamily = MinecraftFontFamily,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        fontSize = 11.5.sp,
-                        maxLines = 1,
-                        softWrap = false
-                    )
-                    if (isSelected) {
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Box(
-                            modifier = Modifier
-                                .width(18.dp)
-                                .height(2.dp)
-                                .clip(RoundedCornerShape(1.dp))
-                                .background(Color(0xFF00FF88))
-                        )
-                    }
-                }
-            }
-        }
     }
 }
 
